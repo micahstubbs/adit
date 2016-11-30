@@ -71,7 +71,12 @@ shinyUI(fluidPage(
           #              position = "0.60 0.15 0"),
           # aframeEntity(class = "cube", mixin = "cube", 
           #              position = "0.30 0.75 0", material = "color: #ffffff"),
-          htmlOutput("vrplot", container = aframeEntity),
+          aframeBox(
+            class = "cube", size = "1 1 1",
+            position = "0 1.5 0", transparent = "true",
+            opacity = ".25",
+            htmlOutput("vrplot", container = aframeEntity)
+          ),
           aframeEntity(id = "sky", geometry = "primitive: sphere; radius: 65;",
                        material = "shader: skyGradient; colorTop: #353449; colorBottom: #BC483E; side: back"),
           aframeEntity(ground = ""),
