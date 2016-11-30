@@ -31,12 +31,12 @@ shinyServer(function(input, output) {
                    position = p))
     }
     geoms <- unname(Map(makeGeom, points))
-    do.call(aframeBox, args = c(
-      list(position = "0.5 0.5 0.5",
+    do.call(aframeEntity, args = c(
+      list(position = "0 1.5 0",
            opacity = ".1",
-           transparent = "true"),
-      geoms
-    ))
+           transparent = "true", class = "cube", mixin = "cube"),
+      geoms)
+    )
   })
   
 })
