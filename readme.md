@@ -4,6 +4,15 @@ Adit is a tool for exploratory data analysis that brings together
 the R language for statistical computing and virtual reality via 
 [shiny](https://shiny.rstudio.com/) and [A-frame](http://aframe.io).
 
+## Current Status
+
+Adit renders data from the `iris` dataset in a 3d scatter plot, mapping
+data to x, y, z, color, and shape. You can grab the plot and move it
+with a controller.
+
+Now that basic mapping is working, the next focus will be on UI within VR
+to build plots by choosing the mappings. 
+
 ## Try it
 
 This is an early work in progress. The current build can be experienced at
