@@ -8,14 +8,16 @@
 #
 
 library(shiny)
-source("aframe.R")
+library(htmlwidgets)
+library(shinyaframe)
+#source("aframe.R")
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
   
   # AFRAME scripts
   tags$head(
-    tags$script(src = "aframe.js"),
+    #tags$script(src = "aframe.js"),
     tags$script(src = "components/aabb-collider.js"),
     tags$script(src = "components/grab.js"),
     tags$script(src = "components/ground.js"),
@@ -38,45 +40,33 @@ shinyUI(fluidPage(
         fog = "color: #bc483e; near: 0; far: 65;",
         aframeAssets(
           aframeMixin(id = "cube",
-                      geometry = "primitive: box; height: 0.30; width: 0.30; depth: 0.30",
-                      material = "color: #EF2D5E;"),
+                      geometry = "primitive: box; height: 0.5; width: 0.5; depth: 0.5",
+                      material = "color: #EF2D5E; transparent: true; opacity: 0.2"),
           aframeMixin(id = "cube-collided",
                       material = "color: #F2E646;"),
           aframeMixin(id = "cube-grabbed",
-                      material = "color: #F2E646;")
+                      material = "color: #F2E646;"),
+          atags$mixin(id = "point", class = "point",
+                      geometry = "primitive: sphere; radius: 0.01",
+                      material = "color: yellow;")
         ),
         aframeEntity(`hand-controls` = "left", 
-                     `aabb-collider` = "objects: .cube;", 
+                     `aabb-collider` = "objects: .cube, .aScatter3d;", 
                      grab = ""),
         aframeEntity(`hand-controls` = "right", 
-                     `aabb-collider` = "objects: .cube;", 
+                     `aabb-collider` = "objects: .cube, .aScatter3d;", 
                      grab = ""),
         aframeEntity(
           position="0 0 -1", 
           aframeEntity(class = "cube", mixin = "cube", 
                       position = "0.30 1.65 0"),
-          # aframeEntity(class = "cube", mixin = "cube", 
-          #              position = "0 1.95 0"),
-          # aframeEntity(class = "cube", mixin = "cube", 
-          #              position = "-0.30 1.65 0"),
-          # aframeEntity(class = "cube", mixin = "cube", 
-          #              position = "0.60 1.35 0"),
-          # aframeEntity(class = "cube", mixin = "cube", 
-          #              position = "0.60 1.05 0"),
-          # aframeEntity(class = "cube", mixin = "cube", 
-          #              position = "0.60 0.75 0"),
-          # aframeEntity(class = "cube", mixin = "cube", 
-          #              position = "0.60 0.45 0"),
-          # aframeEntity(class = "cube", mixin = "cube", 
-          #              position = "0.60 0.15 0"),
-          # aframeEntity(class = "cube", mixin = "cube", 
-          #              position = "0.30 0.75 0", material = "color: #ffffff"),
-          aframeBox(
-            class = "cube", size = "1 1 1",
-            position = "0 1.5 0", transparent = "true",
-            opacity = ".25",
-            htmlOutput("vrplot", container = aframeEntity)
-          ),
+          # aframeBox(
+          #   class = "cube", size = "1 1 1",
+          #   position = "0 1.5 0", transparent = "true",
+          #   opacity = ".25",
+          #   aScatter3dOutput("myplot")
+          # ),
+          aScatter3dOutput("myplot"),
           aframeEntity(id = "sky", geometry = "primitive: sphere; radius: 65;",
                        material = "shader: skyGradient; colorTop: #353449; colorBottom: #BC483E; side: back"),
           aframeEntity(ground = ""),
