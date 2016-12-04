@@ -17,7 +17,7 @@ shinyUI(fluidPage(
   
   # AFRAME scripts
   tags$head(
-    tags$script(src = "aframe.js"),
+    #tags$script(src = "aframe.js"),
     tags$script(src = "cannon.js"),
     tags$script(src = "components/ground.js"),
     tags$script(src = "shaders/skyGradient.js"),
@@ -63,64 +63,35 @@ shinyUI(fluidPage(
         aframeEntity(
           `static-body`="shape: sphere; sphereRadius: 0.02;",
           `vive-controls`="hand: left",
-          `sphere-collider`="objects: .cube;",
+          `sphere-collider`="objects: .grabbable;",
           grab = ""
         ),
         aframeEntity(
           `static-body`="shape: sphere; sphereRadius: 0.02;",
           `vive-controls`="hand: right",
-          `sphere-collider`="objects: .cube;",
+          `sphere-collider`="objects: .grabbable;",
           grab = ""
         ),
         aframeEntity(
           position= "0 0 -1", 
           aframeEntity(
-            position = "0 1.5 0"#,
+            position = "0 1.5 -0.5",
+            geometry = "primitive: box; width: 0.5; height: 0.5; depth: 0.5",
+            material = "transparent: true; opacity: 0;",
+            `dynamic-body` = "shape: box;",
+            class = "grabbable",
+            sleepy = "grabbed",
             # aframeEntity(class = "cube", mixin = "cube",
             #              position = "0.30 1.65 0"),
-            #aScatter3dOutput("myplot")
+            aScatter3dOutput("myplot")
           ),
           aframeEntity(
             position = ".5 1.5 0",
             aDataFrameOutput("mydat")
           ),
-          aframeEntity(
-            position = "-0.5 1.5 0",
-            aframeSphere(`dynamic-body` = "",
-              position = "0 .25 0",
-              color = "yellow",
-              radius = ".08",
-              class = "draggable"
-            ),
-            aframeBox(
-              `dynamic-body` = "",
-              position = "0 -.25 0",
-              depth = ".25", width = ".25",
-              height = ".25",
-              color = "blue",
-              `drop-target` = "",
-              class = "draggable"
-            )
-          ),
           aframeEntity(id = "sky", geometry = "primitive: sphere; radius: 65;",
                        material = "shader: skyGradient; colorTop: #353449; colorBottom: #BC483E; side: back"),
           aframeEntity(ground = ""),
-          aframeBox(position = "0 1.5 -.5", color = "green", 
-                    `dynamic-body` = "", sleepy = "grabbed",
-                    class = "cube",
-                    width = "0.25", height = "0.25", depth = "0.25"),
-          aframeBox(position = "-0.5 1.5 -0.5", color = "yellow", 
-                    `dynamic-body` = "", sleepy = "grabbed",
-                    class = "cube",
-                    width = "0.25", height = "0.25", depth = "0.25"),
-          aframeBox(position = "0.5 1.5 -.5", color = "red", 
-                    `dynamic-body` = "", sleepy = "grabbed",
-                    class = "cube",
-                    width = "0.25", height = "0.25", depth = "0.25"),
-          aframeEntity(geometry = "primitive: plane; height: 10; width: 10",
-                       material = "color: white;",
-                       `static-body` = "",
-                       rotation = "-90 0 0", position = "0 -0.05 0"),
           aframeEntity(light = "type: point; color: #f4f4f4; intensity: 0.2; distance: 0",
                        position = "8 10 18"),
           aframeEntity(light = "type: point; color: #f4f4f4; intensity: 0.6; distance: 0",
