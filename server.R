@@ -13,13 +13,16 @@ library(ggplot2)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
-   
-  output$dataset <- renderTable({
-    
-    head(switch(input$datasource, 
+  
+  selected_data <- reactive({
+    switch(input$datasource, 
            "iris" = iris,
            "mtcars" = mtcars,
-           "diamonds" = as.data.frame(diamonds)))
+           "diamonds" = as.data.frame(diamonds))
+  }) 
+  
+  output$dataset <- renderTable({
+    head(selected_data())
   })
   
   output$myplot <- renderAScatter3d({
@@ -33,17 +36,9 @@ shinyServer(function(input, output) {
       geom = c("sphere", "box", 
                "torus")[as.integer(as.factor(iris$Species))]))
   })
-  # output$vrplot <- renderUI({
-  #   x <- scales::rescale(iris[[1]], to = c(-0.5, 0.5))
-  #   y <- scales::rescale(iris[[2]], to = c(-0.5, 0.5))
-  #   z <- scales::rescale(iris[[3]], to = c(-0.5, 0.5))
-  #   points <- paste(x, y, z)
-  #   makeGeom <- function(p) {
-  #     list(aframeSphere(color = "yellow", radius = ".01",
-  #                  position = p))
-  #   }
-  #   geoms <- unname(Map(makeGeom, points))
-  #   do.call(aframeEntity, geoms)
-  # })
+  
+  output$mydat <- renderADataFrame({
+    aDataFrame(selected_data())
+  })
   
 })

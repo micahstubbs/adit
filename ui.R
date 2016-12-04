@@ -21,7 +21,16 @@ shinyUI(fluidPage(
     tags$script(src = "components/aabb-collider.js"),
     tags$script(src = "components/grab.js"),
     tags$script(src = "components/ground.js"),
-    tags$script(src = "shaders/skyGradient.js")
+    tags$script(src = "shaders/skyGradient.js"),
+    tags$script(src = "components/aframe-layout-component.js"),
+    #tags$script(src = "components/aframe-bmfont-text-component.js"),
+    tags$script(src = "components/aframe-draw-component.js"),
+    tags$script(src = "components/aframe-textwrap-component.js"),
+    tags$script(src = "components/data-frame.js"),
+    tags$script(src = "components/data-frame-column.js"),
+    tags$script(src = "components/aframe-super-hands.js"),
+    tags$script(src = "components/drop-target.js")
+
   ),
   # Application title
   titlePanel("VR Data Explorer"),
@@ -37,6 +46,7 @@ shinyUI(fluidPage(
     
     mainPanel(
       aframeScene(
+        debug = "",
         fog = "color: #bc483e; near: 0; far: 65;",
         aframeAssets(
           aframeMixin(id = "cube",
@@ -52,21 +62,41 @@ shinyUI(fluidPage(
         ),
         aframeEntity(`hand-controls` = "left", 
                      `aabb-collider` = "objects: .cube, .aScatter3d;", 
-                     grab = ""),
+                     #grab = "", 
+                     `super-hands` = ""),
         aframeEntity(`hand-controls` = "right", 
-                     `aabb-collider` = "objects: .cube, .aScatter3d;", 
-                     grab = ""),
+                     `aabb-collider` = "objects: .cube, .aScatter3d, .draggable;", 
+                     #grab = "",
+                     `super-hands` = ""),
         aframeEntity(
-          position="0 0 -1", 
-          aframeEntity(class = "cube", mixin = "cube", 
-                      position = "0.30 1.65 0"),
-          # aframeBox(
-          #   class = "cube", size = "1 1 1",
-          #   position = "0 1.5 0", transparent = "true",
-          #   opacity = ".25",
-          #   aScatter3dOutput("myplot")
-          # ),
-          aScatter3dOutput("myplot"),
+          position= "0 0 -1", 
+          aframeEntity(
+            position = "0 1.5 0",
+            # aframeEntity(class = "cube", mixin = "cube",
+            #              position = "0.30 1.65 0"),
+            aScatter3dOutput("myplot")
+          ),
+          aframeEntity(
+            position = ".5 1.5 0",
+            aDataFrameOutput("mydat")
+          ),
+          aframeEntity(
+            position = "-.5 1.5 0",
+            aframeSphere(
+              position = "0 .25 0",
+              color = "yellow",
+              radius = ".08",
+              class = "draggable"
+            ),
+            aframeBox(
+              position = "0 -.25 0",
+              depth = ".25", width = ".25",
+              height = ".25",
+              color = "blue",
+              `drop-target` = "",
+              class = "draggable"
+            )
+          ),
           aframeEntity(id = "sky", geometry = "primitive: sphere; radius: 65;",
                        material = "shader: skyGradient; colorTop: #353449; colorBottom: #BC483E; side: back"),
           aframeEntity(ground = ""),
@@ -78,54 +108,6 @@ shinyUI(fluidPage(
                        position = "-8 10 -18")
         )
       )
-       # HTML(paste(
-       #   '<a-scene fog="color: #bc483e; near: 0; far: 65;">
-       #     <a-assets>
-       #     <a-mixin id="cube"
-       #   geometry="primitive: box; height: 0.30; width: 0.30; depth: 0.30"
-       #   material="color: #EF2D5E;"></a-mixin>
-       #     <a-mixin id="cube-collided"
-       #   material="color: #F2E646;"></a-mixin>
-       #     <a-mixin id="cube-grabbed"
-       #   material="color: #F2E646;"></a-mixin>
-       #     </a-assets>
-       #     <!-- Hands -->
-       #     <a-entity ></a-entity>
-       #     <a-entity hand-controls="right" aabb-collider="objects: .cube;" grab></a-entity>
-       #     
-       #     <!-- A-Frame cubes -->
-       #     <a-entity position="0 0 -1">
-       #     <a-entity class="cube" mixin="cube" position="0.30 1.65 0"></a-entity>
-       #     <a-entity class="cube" mixin="cube" position="0 1.95 0"></a-entity>
-       #     <a-entity class="cube" mixin="cube" position="-0.30 1.65 0"></a-entity>
-       #     
-       #     <a-entity class="cube" mixin="cube" position="0.60 1.35 0"></a-entity>
-       #     <a-entity class="cube" mixin="cube" position="0.60 1.05 0"></a-entity>
-       #     <a-entity class="cube" mixin="cube" position="0.60 0.75 0"></a-entity>
-       #     <a-entity class="cube" mixin="cube" position="0.60 0.45 0"></a-entity>
-       #     <a-entity class="cube" mixin="cube" position="0.60 0.15 0"></a-entity>
-       #     
-       #     <a-entity class="cube" mixin="cube" position="0.30 0.75 0"></a-entity>
-       #     <a-entity class="cube" mixin="cube" position="0 0.75 0"></a-entity>
-       #     <a-entity class="cube" mixin="cube" position="-0.30 0.75 0"></a-entity>
-       #     
-       #     <a-entity class="cube" mixin="cube" position="-0.60 1.35 0"></a-entity>
-       #     <a-entity class="cube" mixin="cube" position="-0.60 1.05 0"></a-entity>
-       #     <a-entity class="cube" mixin="cube" position="-0.60 0.75 0"></a-entity>
-       #     <a-entity class="cube" mixin="cube" position="-0.60 0.45 0"></a-entity>
-       #     <a-entity class="cube" mixin="cube" position="-0.60 0.15 0"></a-entity>
-       #     
-       #     <!-- Environment -->
-       #     <a-entity id="sky"
-       #   geometry="primitive: sphere; radius: 65;"
-       #   material="shader: skyGradient; colorTop: #353449; colorBottom: #BC483E; side: back"></a-entity>
-       #     <a-entity ground></a-entity>
-       #     <a-entity light="type: point; color: #f4f4f4; intensity: 0.2; distance: 0" position="8 10 18"></a-entity>
-       #     <a-entity light="type: point; color: #f4f4f4; intensity: 0.6; distance: 0" position="-8 10 -18"></a-entity>
-       #     <a-entity light="type: ambient; color: #f4f4f4; intensity: 0.4;" position="-8 10 -18"></a-entity>
-       #     </a-entity>
-       #     </a-scene>',
-       #   sep = "\n"))
     )
   )
 ))
