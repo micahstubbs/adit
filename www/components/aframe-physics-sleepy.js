@@ -17,6 +17,7 @@ AFRAME.registerComponent('sleepy', {
   updateBody: function(evt) {
     console.log(this.el.body);
     this.physicsBody = evt.detail.body;
+    this.physicsBody.collisionResponse = false;
     this.physicsBody.sleep();
   },
   update: function() {
