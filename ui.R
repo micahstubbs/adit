@@ -19,8 +19,6 @@ shinyUI(fluidPage(
   tags$head(
     tags$script(src = "aframe.js"),
     tags$script(src = "cannon.js"),
-    #tags$script(src = "components/aabb-collider.js"),
-    #tags$script(src = "components/grab.js"),
     tags$script(src = "components/ground.js"),
     tags$script(src = "shaders/skyGradient.js"),
     tags$script(src = "components/aframe-layout-component.js"),
@@ -29,9 +27,9 @@ shinyUI(fluidPage(
     tags$script(src = "components/aframe-textwrap-component.js"),
     tags$script(src = "components/data-frame.js"),
     tags$script(src = "components/data-frame-column.js"),
-    #tags$script(src = "components/aframe-super-hands.js"),
-    #tags$script(src = "components/drop-target.js")
-    tags$script(src = "components/aframe-physics-system.js")
+    tags$script(src = "components/aframe-physics-system.js"),
+    tags$script(src = "components/aframe-extras.js"),
+    tags$script(src = "components/aframe-physics-sleepy.js")
 
   ),
   # Application title
@@ -49,7 +47,6 @@ shinyUI(fluidPage(
     mainPanel(
       aframeScene(
         physics = "debug: true; gravity: 0;",
-        debug = "",
         fog = "color: #bc483e; near: 0; far: 65;",
         aframeAssets(
           aframeMixin(id = "cube",
@@ -63,14 +60,18 @@ shinyUI(fluidPage(
                       geometry = "primitive: sphere; radius: 0.01",
                       material = "color: yellow;")
         ),
-        aframeEntity(`hand-controls` = "left", 
-                     `aabb-collider` = "objects: .cube, .aScatter3d;", 
-                     #grab = "", 
-                     `super-hands` = ""),
-        aframeEntity(`hand-controls` = "right", 
-                     `aabb-collider` = "objects: .cube, .aScatter3d, .draggable;", 
-                     #grab = "",
-                     `super-hands` = ""),
+        aframeEntity(
+          `static-body`="shape: sphere; sphereRadius: 0.02;",
+          `vive-controls`="hand: left",
+          `sphere-collider`="objects: .cube;",
+          grab = ""
+        ),
+        aframeEntity(
+          `static-body`="shape: sphere; sphereRadius: 0.02;",
+          `vive-controls`="hand: right",
+          `sphere-collider`="objects: .cube;",
+          grab = ""
+        ),
         aframeEntity(
           position= "0 0 -1", 
           aframeEntity(
@@ -84,7 +85,7 @@ shinyUI(fluidPage(
             aDataFrameOutput("mydat")
           ),
           aframeEntity(
-            position = "-.5 1.5 0",
+            position = "-0.5 1.5 0",
             aframeSphere(`dynamic-body` = "",
               position = "0 .25 0",
               color = "yellow",
@@ -104,11 +105,22 @@ shinyUI(fluidPage(
           aframeEntity(id = "sky", geometry = "primitive: sphere; radius: 65;",
                        material = "shader: skyGradient; colorTop: #353449; colorBottom: #BC483E; side: back"),
           aframeEntity(ground = ""),
-          aframeBox(position = "0 1.5 -.5", color = "green", `dynamic-body` = "",
+          aframeBox(position = "0 1.5 -.5", color = "green", 
+                    `dynamic-body` = "", sleepy = "grabbed",
+                    class = "cube",
                     width = "0.25", height = "0.25", depth = "0.25"),
-          aframeEntity(geometry = "primitive: plane; height: 10; width: 10", material = "color: white;",
+          aframeBox(position = "-0.5 1.5 -0.5", color = "yellow", 
+                    `dynamic-body` = "mass: 10000;", 
+                    class = "cube",
+                    width = "0.25", height = "0.25", depth = "0.25"),
+          aframeBox(position = "0.5 1.5 -.5", color = "red", 
+                    `dynamic-body` = "linearDamping: 0.05; angularDamping: 0.05; mass: 100;", 
+                    class = "cube",
+                    width = "0.25", height = "0.25", depth = "0.25"),
+          aframeEntity(geometry = "primitive: plane; height: 10; width: 10",
+                       material = "color: white;",
                        `static-body` = "",
-                       rotation = "-90 0 0"),
+                       rotation = "-90 0 0", position = "0 -0.05 0"),
           aframeEntity(light = "type: point; color: #f4f4f4; intensity: 0.2; distance: 0",
                        position = "8 10 18"),
           aframeEntity(light = "type: point; color: #f4f4f4; intensity: 0.6; distance: 0",
