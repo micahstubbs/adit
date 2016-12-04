@@ -1,7 +1,7 @@
 // Make dynamic bodies idle when not grabbed
 
 AFRAME.registerComponent('sleepy', {
-  schema: {default: 'grabbed'},
+  schema: {state: {default: 'grabbed'}},
   
   dependencies: ['dynamic-body'],
 
@@ -33,7 +33,7 @@ AFRAME.registerComponent('sleepy', {
   },
   
   onDrop: function(evt) {
-    if(evt.detail.state == this.data) {
+    if(evt.detail.state == this.data.state) {
       this.physicsBody.sleep();
     }
   }

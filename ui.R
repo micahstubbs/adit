@@ -10,7 +10,7 @@
 library(shiny)
 library(htmlwidgets)
 library(shinyaframe)
-#source("aframe.R")
+
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
@@ -89,7 +89,7 @@ shinyUI(fluidPage(
             material = "transparent: true; opacity: 0;",
             `dynamic-body` = "shape: box;",
             class = "grabbable",
-            sleepy = "grabbed",
+            sleepy = "",
             # aframeEntity(class = "cube", mixin = "cube",
             #              position = "0.30 1.65 0"),
             aScatter3dOutput("myplot")
