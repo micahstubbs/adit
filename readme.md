@@ -10,8 +10,15 @@ Adit renders data from the `iris` dataset in a 3d scatter plot, mapping
 data to x, y, z, color, and shape. You can grab the plot and move it
 with a controller.
 
-Now that basic mapping is working, the next focus will be on UI within VR
-to build plots by choosing the mappings. 
+### Latest Updates
+
+* Changed to [aframe-physics-system](https://github.com/donmccurdy/aframe-physics-system)
+and [aframe-extras](https://github.com/donmccurdy/aframe-extras) 
+from @donmccurdy for improved grabbing (rotation & position) via `cannon.js`
+constraints
+
+Now that basic mapping is working, the current focus will be on UI within VR
+to build plots interactively. 
 
 ## Try it
 
