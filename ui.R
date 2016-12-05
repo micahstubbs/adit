@@ -29,7 +29,8 @@ shinyUI(fluidPage(
     tags$script(src = "components/data-frame-column.js"),
     tags$script(src = "components/aframe-physics-system.js"),
     tags$script(src = "components/aframe-extras.js"),
-    tags$script(src = "components/aframe-physics-sleepy.js")
+    tags$script(src = "components/aframe-physics-sleepy.js"),
+    tags$script(src = "components/aframe-stretch.js")
 
   ),
   # Application title
@@ -69,17 +70,22 @@ shinyUI(fluidPage(
                       geometry = "primitive: sphere; radius: 0.01",
                       material = "color: yellow;")
         ),
+        # Hand conttols
         aframeEntity(
+          id = "lefthand",
           `static-body`="shape: sphere; sphereRadius: 0.02;",
           `vive-controls`="hand: left",
           `sphere-collider`="objects: .grabbable;",
-          grab = ""
+          grab = "",
+          stretch = "#righthand"
         ),
         aframeEntity(
+          id = "righthand",
           `static-body`="shape: sphere; sphereRadius: 0.02;",
           `vive-controls`="hand: right",
           `sphere-collider`="objects: .grabbable;",
-          grab = ""
+          grab = "",
+          stretch = "#lefthand"
         ),
         aframeEntity(
           position= "0 0 -1", 

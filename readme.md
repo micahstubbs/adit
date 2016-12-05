@@ -12,10 +12,13 @@ with a controller.
 
 ### Latest Updates
 
+* Added `aframe-stretch` to scale the scatterplot by grabbing and 
+  stretching with two hands
 * Changed to [aframe-physics-system](https://github.com/donmccurdy/aframe-physics-system)
-and [aframe-extras](https://github.com/donmccurdy/aframe-extras) 
-from @donmccurdy for improved grabbing (rotation & position) via `cannon.js`
-constraints
+  and [aframe-extras](https://github.com/donmccurdy/aframe-extras) 
+  from @donmccurdy for improved grabbing (rotation & position) via `cannon.js`
+  constraints
+
 
 Now that basic mapping is working, the current focus will be on UI within VR
 to build plots interactively. 
