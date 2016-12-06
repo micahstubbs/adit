@@ -93,7 +93,7 @@ shinyUI(fluidPage(
             position = "0 1.5 -0.5",
             geometry = "primitive: box; width: 0.5; height: 0.5; depth: 0.5",
             material = "transparent: true; opacity: 0;",
-            `dynamic-body` = "shape: box;",
+            `dynamic-body` = "shape: box; linearDamping: 0.8; angularDamping: 0;",
             class = "grabbable",
             sleepy = "",
             # aframeEntity(class = "cube", mixin = "cube",
@@ -112,7 +112,12 @@ shinyUI(fluidPage(
           aframeEntity(light = "type: point; color: #f4f4f4; intensity: 0.6; distance: 0",
                        position = "-8 10 -18"),
           aframeEntity(light = "type: ambient; color: #f4f4f4; intensity: 0.4;",
-                       position = "-8 10 -18")
+                       position = "-8 10 -18"),
+          # ground collision layer (not really necessary w/o gravity)
+          aframeEntity(geometry = "primitive: plane; height: 10; width: 10",
+                       material = "color: white;",
+                       `static-body` = "",
+                       rotation = "-90 0 0", position = "0 -0.05 0")
         )
       )
     )

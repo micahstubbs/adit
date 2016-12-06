@@ -12,6 +12,17 @@ with a controller.
 
 ### Latest Updates
 
+* Reworked sleepy component to utilize `CANNON.js` built-in sleepiness
+  and control damping. In WebVR Chromium 56, this can cause `dynamic-body` 
+  entities to be obliterated. Can use v55 WebVR build instead. When
+  releasing objects now:
+      * Objects with low momentum will go to sleep (become idle).
+        This makes it easier to place a plot still without any residual
+        spin or motion.
+      * Objects released with significant momentum will cease linear
+        motion quickly, but will continue to spin in place. This makes
+        it easy to make a plot animated by giving a flick of the wrist when
+        releasing.
 * Added `aframe-stretch` to scale the scatterplot by grabbing and 
   stretching with two hands
 * Changed to [aframe-physics-system](https://github.com/donmccurdy/aframe-physics-system)
