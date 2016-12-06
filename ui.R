@@ -30,7 +30,9 @@ shinyUI(fluidPage(
     tags$script(src = "components/aframe-physics-system.js"),
     tags$script(src = "components/aframe-extras.js"),
     tags$script(src = "components/aframe-physics-sleepy.js"),
+    tags$script(src = "components/aframe-physics-collision-filter.js"),
     tags$script(src = "components/aframe-stretch.js")
+   
 
   ),
   # Application title
@@ -88,37 +90,57 @@ shinyUI(fluidPage(
           stretch = "#lefthand"
         ),
         aframeEntity(
-          position= "0 0 -1", 
-          aframeEntity(
-            position = "0 1.5 -0.5",
-            geometry = "primitive: box; width: 0.5; height: 0.5; depth: 0.5",
-            material = "transparent: true; opacity: 0;",
-            `dynamic-body` = "shape: box; linearDamping: 0.8; angularDamping: 0;",
-            class = "grabbable",
-            sleepy = "",
-            # aframeEntity(class = "cube", mixin = "cube",
-            #              position = "0.30 1.65 0"),
-            aScatter3dOutput("myplot")
-          ),
-          aframeEntity(
-            position = ".5 1.5 0",
-            aDataFrameOutput("mydat")
-          ),
-          aframeEntity(id = "sky", geometry = "primitive: sphere; radius: 65;",
-                       material = "shader: skyGradient; colorTop: #353449; colorBottom: #BC483E; side: back"),
-          aframeEntity(ground = ""),
-          aframeEntity(light = "type: point; color: #f4f4f4; intensity: 0.2; distance: 0",
-                       position = "8 10 18"),
-          aframeEntity(light = "type: point; color: #f4f4f4; intensity: 0.6; distance: 0",
-                       position = "-8 10 -18"),
-          aframeEntity(light = "type: ambient; color: #f4f4f4; intensity: 0.4;",
-                       position = "-8 10 -18"),
-          # ground collision layer (not really necessary w/o gravity)
-          aframeEntity(geometry = "primitive: plane; height: 10; width: 10",
-                       material = "color: white;",
-                       `static-body` = "",
-                       rotation = "-90 0 0", position = "0 -0.05 0")
-        )
+          position = "0 1.5 -0.5",
+          geometry = "primitive: box; width: 0.5; height: 0.5; depth: 0.5",
+          material = "transparent: true; opacity: 0;",
+          `dynamic-body` = "shape: box;",
+          class = "grabbable",
+          id = "plotcontainer",
+          sleepy = "",
+          `collision-filter` = "group: plots; collidesWith: plots, default;",
+          aScatter3dOutput("myplot")
+        ),
+        aframeBox(
+          position = "-1 1.5 -0.5",
+          width = "0.25", height = "0.25", depth = "0.25",
+          material = "color: blue",
+          `dynamic-body` = "",
+          `collision-filter` = "group: notplots; collidesWith: notplots, default;",
+          sleepy = "",
+          class = "grabbable",
+          id = "filterbox"
+        ),
+        aframeBox(
+          position = "-1 1.5 0.5",
+          width = "0.25", height = "0.25", depth = "0.25",
+          material = "color: blue",
+          `dynamic-body` = "",
+          `collision-filter` = "group: notplots; collidesWith: notplots, default;",
+          sleepy = "",
+          class = "grabbable",
+          id = "filterbox2"
+        ),
+        aframeEntity(
+          position = ".5 1.5 0",
+          aDataFrameOutput("mydat"),
+          id = "datacontainer"
+        ),
+        aframeEntity(id = "sky", geometry = "primitive: sphere; radius: 65;",
+                     material = "shader: skyGradient; colorTop: #353449; colorBottom: #BC483E; side: back"),
+        aframeEntity(ground = ""),
+        aframeEntity(light = "type: point; color: #f4f4f4; intensity: 0.2; distance: 0",
+                     position = "8 10 18"),
+        aframeEntity(light = "type: point; color: #f4f4f4; intensity: 0.6; distance: 0",
+                     position = "-8 10 -18"),
+        aframeEntity(light = "type: ambient; color: #f4f4f4; intensity: 0.4;",
+                     position = "-8 10 -18"),
+        # ground collision layer (not really necessary w/o gravity)
+        aframeEntity(geometry = "primitive: plane; height: 10; width: 10",
+                     material = "color: white;",
+                     `static-body` = "",
+                     rotation = "-90 0 0", position = "0 -0.05 0",
+                     id = "floorcollider")
+
       )
     )
   )
