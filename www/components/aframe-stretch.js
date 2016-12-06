@@ -2,7 +2,9 @@
 
 AFRAME.registerComponent('stretch', {
   // seletor to other controller
-  schema: {type: 'selector'},
+  schema: {},
+  
+  dependencies: ['grab'],
   
   init: function () {
     this.GRABBED_STATE = 'grabbed';
@@ -10,7 +12,15 @@ AFRAME.registerComponent('stretch', {
 
     this.grabbing = false;
     this.hitEl = null;
-    this.otherController = this.data;
+    this.otherController = null;
+    
+    if (this.el.sceneEl.hasLoaded) {
+      this.findOtherController();
+    } else {
+      this.el.sceneEl.addEventListener('loaded', 
+        this.findOtherController.bind(this));
+    }
+    
     //this.physics = this.el.sceneEl.systems.physics;
     //this.constraint = null;
 
@@ -18,6 +28,15 @@ AFRAME.registerComponent('stretch', {
     this.onHit = this.onHit.bind(this);
     this.onGripOpen = this.onGripOpen.bind(this);
     this.onGripClose = this.onGripClose.bind(this);
+  },
+  
+  findOtherController: function () {
+    
+    me = this.el.components["tracked-controls"].controller;
+    controllers = document.querySelectorAll("[tracked-controls]");
+    for(var [id, node] of controllers.entries()) { 
+      if(node !== this.el) this.otherController = node;
+    }
   },
 
   play: function () {
@@ -62,15 +81,25 @@ AFRAME.registerComponent('stretch', {
     // No action if: no target, other controller not already grabbing
     // target already being stretched, 
     // target not already grabbed by other controller, 
-    // trigger not down, or another target already acquired
-    if (!hitEl || !this.otherController.components.grab.grabbing ||
+    // trigger not down, another target already acquired,
+    // or the controllers have grabbed different targets
+    /*if (!hitEl || !this.otherController.components.grab.grabbing ||
           hitEl.is(this.STRETCHED_STATE) || 
           !hitEl.is(this.GRABBED_STATE) ||
-          !this.grabbing || this.hitEl) { 
+          !this.grabbing || this.hitEl ||
+          this.hitEl !== otherController.components.grab.hitEl) { 
             return; 
-    }
-    hitEl.addState(this.STRETCHED_STATE);
-    this.hitEl = hitEl;
+    }*/
+    // start stretch when there is a hit, the trigger is down,
+    // don't already have something grabbed, and the same target
+    // is grabbed by the other controller
+    if(hitEl && this.grabbing && !this.hitEl &&
+        !this.el.components.grab.hitEl &&
+       !hitEl.is(this.STRETCHED_STATE) &&
+       hitEl === this.otherController.components.grab.hitEl) {
+         hitEl.addState(this.STRETCHED_STATE);
+         this.hitEl = hitEl;
+       }
   },
   
   tick: function () {

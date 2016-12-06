@@ -79,7 +79,7 @@ shinyUI(fluidPage(
           `vive-controls`="hand: left",
           `sphere-collider`="objects: .grabbable;",
           grab = "",
-          stretch = "#righthand"
+          stretch = ""
         ),
         aframeEntity(
           id = "righthand",
@@ -87,7 +87,7 @@ shinyUI(fluidPage(
           `vive-controls`="hand: right",
           `sphere-collider`="objects: .grabbable;",
           grab = "",
-          stretch = "#lefthand"
+          stretch = ""
         ),
         aframeEntity(
           position = "0 1.5 -0.5",
