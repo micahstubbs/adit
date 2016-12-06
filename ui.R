@@ -96,7 +96,7 @@ shinyUI(fluidPage(
           `dynamic-body` = "shape: box;",
           class = "grabbable",
           id = "plotcontainer",
-          sleepy = "",
+          sleepy = "angularDamping: 0; speedLimit: 1",
           `collision-filter` = "group: plots; collidesWith: plots, default;",
           aScatter3dOutput("myplot")
         ),
@@ -135,7 +135,7 @@ shinyUI(fluidPage(
         aframeEntity(light = "type: ambient; color: #f4f4f4; intensity: 0.4;",
                      position = "-8 10 -18"),
         # ground collision layer (not really necessary w/o gravity)
-        aframeEntity(geometry = "primitive: plane; height: 10; width: 10",
+        aframeEntity(geometry = "primitive: plane; height: 20; width: 20",
                      material = "color: white;",
                      `static-body` = "",
                      rotation = "-90 0 0", position = "0 -0.05 0",

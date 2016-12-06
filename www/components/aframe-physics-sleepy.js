@@ -2,39 +2,38 @@
 
 AFRAME.registerComponent('sleepy', {
   schema: {
-    speedLimit: {default: null, type: 'number'},
-    delay: {default: null, type: 'number'},
-    linearDamping: {default: null, type: 'number'},
-    angularDamping: {default: null, type: 'number'}
+    speedLimit: {default: 0.25, type: 'number'},
+    delay: {default: 0.25, type: 'number'},
+    linearDamping: {default: 0.99, type: 'number'},
+    angularDamping: {default: 0.99, type: 'number'},
+    holdState: {default: 'grabbed'}
   },
   
-  dependencies: ['dynamic-body'],
+  //dependencies: ['dynamic-body'],
 
   init: function () {
     if (this.el.body) {
-      this.updateBody();
+      this.initBody();
     } else {
-      this.el.addEventListener('body-loaded', this.updateBody.bind(this));
+      this.el.addEventListener('body-loaded', this.initBody.bind(this));
     }
+  },
+  
+  initBody: function () {
+    this.el.body.world.allowSleep = true;
+    this.update();
     this.play();
-    
+    this.resumeState({detail: {state: this.data.holdState}});
   },
   
-  updateBody: function() {
-    this.el.body.sleepSpeedLimit = this.data.speedLimit || 
-      this.system.data.speedLimit;
-    this.el.body.sleepTimeLimit = this.data.delay ||
-      this.system.data.delay;
-    this.el.body.linearDamping = this.linearDamping ||
-      this.system.data.linearDamping;
-    this.el.body.angularDamping = this.linearDamping ||
-      this.system.data.angularDamping;
-    this.el.body.allowSleep = true;
-    this.resumeState({detail: {state: this.system.HOLDSTATE}});
-  },
-  
+
   update: function() {
-    if(this.el.body) this.updateBody();
+    if(this.el.body) {
+      this.el.body.sleepSpeedLimit = this.data.speedLimit;
+      this.el.body.sleepTimeLimit = this.data.delay;
+      this.el.body.linearDamping = this.data.linearDamping;
+      this.el.body.angularDamping = this.data.angularDamping;
+    }
   },
   
   play: function () {
@@ -48,40 +47,15 @@ AFRAME.registerComponent('sleepy', {
   },
   // disble the sleeping while grabbed because sleep will break constraints
   holdState: function(evt) {
-    if(evt.detail.state == this.system.data.HOLDSTATE) {
+    if(evt.detail.state == this.data.holdState) {
        this.el.body.allowSleep = false;
     }
   },
   
   resumeState: function(evt) {
-    if(evt.detail.state == this.system.data.HOLDSTATE) {
+    if(evt.detail.state == this.data.holdState) {
       this.el.body.allowSleep = true;
     }
   }
 
-});
-
-
-AFRAME.registerSystem('sleepy', {
-  schema: {
-    speedLimit: {default: 0.3},
-    delay: {default: 0.5},
-    linearDamping: {default: 0.8},
-    angularDamping: {default: 0.0},
-    HOLDSTATE: {default: 'grabbed'}
-  },
-  
-  dependencies: ["physics"],
-  
-  init: function () {
-    this.play();
-  },
-  
-  play: function() {
-    this.sceneEl.systems.physics.world.allowSleep = true;
-  },
-  
-  pause: function() {
-    this.sceneEl.systems.physics.world.allowSleep = false;
-  }
 });
