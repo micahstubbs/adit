@@ -72,24 +72,10 @@ AFRAME.registerComponent('stretch', {
     if (!hitEl) { return; }
     hitEl.removeState(this.STRETCHED_STATE);
     this.hitEl = undefined;
-    //this.physics.world.removeConstraint(this.constraint);
-    //this.constraint = null;
   },
 
   onHit: function (evt) {
     var hitEl = evt.detail.el;
-    // No action if: no target, other controller not already grabbing
-    // target already being stretched, 
-    // target not already grabbed by other controller, 
-    // trigger not down, another target already acquired,
-    // or the controllers have grabbed different targets
-    /*if (!hitEl || !this.otherController.components.grab.grabbing ||
-          hitEl.is(this.STRETCHED_STATE) || 
-          !hitEl.is(this.GRABBED_STATE) ||
-          !this.grabbing || this.hitEl ||
-          this.hitEl !== otherController.components.grab.hitEl) { 
-            return; 
-    }*/
     // start stretch when there is a hit, the trigger is down,
     // don't already have something grabbed, and the same target
     // is grabbed by the other controller
@@ -113,6 +99,16 @@ AFRAME.registerComponent('stretch', {
       y: scale.y * this.deltaStretch,
       z: scale.z * this.deltaStretch
     });
+    //temporary hack: force recreation of the physics body
+    //with the new scale. appears to have a cumulative 
+    //performance impact
+    if(hitEl.components['dynamic-body']) {
+      var bodycomp = hitEl.components['dynamic-body'];
+      bodycomp.system.removeBody(bodycomp.body);
+      bodycomp.el.sceneEl.object3D.remove(bodycomp.wireframe);
+      bodycomp.initBody();
+    }
+
   },
 
   updateDelta: function () {
