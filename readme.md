@@ -7,27 +7,37 @@ the R language for statistical computing and virtual reality via
 ## Current Status
 
 Adit renders data from the `iris` dataset in a 3d scatter plot, mapping
-data to x, y, z, color, and shape. You can grab the plot and move it
-with a controller.
+data to x, y, z, color, and shape. You can grab the plot to move and
+rotate it
+with a controller. If you release it with a twist of the wrist, the plot
+will remain animated in a spin. You can also grab the plot with two 
+hands to stretch or shrink it 
+(but this will degreade performance until you refresh the page for now).
 
 ### Latest Updates
 
-* Reworked sleepy component to utilize `CANNON.js` built-in sleepiness
+* `stretch` component allows for two-handed grab and stretch of entities.
+  Currently incomplete:
+    * Updating the physics body shape during stretch greatly degrades
+      performance (but makes for a smooth interaction feel)
+    * It's possible to inadvertently pickup another object while 
+      stretching
+* `collision-filter` component and system to easily
+  manage collision groups (which objects have physics ineractions
+  with each other and  which don't) via `CANNON.js` settings
+  `collisionFilterGroup` and `collisionFilterMask`
+* `sleepy` component to utilize 
+  `CANNON.js` built-in sleepiness
   and control damping. In WebVR Chromium 56, this can cause `dynamic-body` 
-  entities to be obliterated. Can use v55 WebVR build instead. When
-  releasing objects now:
-      * Objects with low momentum will go to sleep (become idle).
-        This makes it easier to place a plot still without any residual
-        spin or motion.
-      * Objects released with significant momentum will cease linear
-        motion quickly, but will continue to spin in place. This makes
-        it easy to make a plot animated by giving a flick of the wrist when
-        releasing.
-* Added `aframe-stretch` to scale the scatterplot by grabbing and 
-  stretching with two hands
-* Changed to [aframe-physics-system](https://github.com/donmccurdy/aframe-physics-system)
+  entities to be obliterated. Can use v55 WebVR build instead.
+    * With default settings, objects quickly come to rest after
+      after relase regardless of release velocity.
+    * Changing angularDamping to 0 and increasing the speedLimit creates
+      a situation where objects released with a twist will cease linear
+      translation but maintain their rotational spin indefinitely
+* Using [aframe-physics-system](https://github.com/donmccurdy/aframe-physics-system)
   and [aframe-extras](https://github.com/donmccurdy/aframe-extras) 
-  from @donmccurdy for improved grabbing (rotation & position) via `cannon.js`
+  from @donmccurdy for improved grabbing (rotation & position) via `CANNON.js`
   constraints
 
 
@@ -41,12 +51,14 @@ http://wmurphyrd.shinyapps.io/adit.
 
 ## Requirements
 Adit requires a complete VR system (rotational & positional tracking with
-hand controllers). As of today, only the HTC Vive offers this experience, 
-but Oculus Rift will be launching their Touch controllers shortly.
+hand controllers). Oculus Rift + Touch has joined the HTC Vive
+in offering this experience, but I can only test with the Vive for now.
 
 WebVR is still experimental and only available in test versions of browsers. 
 Currently, only [Chromium](https://webvr.info/get-chrome/) 
-supports the full experience with hand controllers. 
+supports the full experience with hand controllers. Also, I'm recommending
+[this archived Chromium build](https://drive.google.com/drive/folders/0BzudLt22BqGRbHdGOTdiaTBkZXM) 
+for Adit because the latest version doesn't always get along with physics. 
 
 After installing Chromium, you **must** enable two options for WebVR to work:
 
