@@ -31,7 +31,8 @@ shinyUI(fluidPage(
     tags$script(src = "components/aframe-extras.js"),
     tags$script(src = "components/aframe-physics-sleepy.js"),
     tags$script(src = "components/aframe-physics-collision-filter.js"),
-    tags$script(src = "components/aframe-stretch.js")
+    tags$script(src = "components/aframe-stretch.js"),
+    tags$script(src = "components/aframe-plot.js")
    
 
   ),
@@ -61,23 +62,13 @@ shinyUI(fluidPage(
         physics = "debug: true; gravity: 0;",
         fog = "color: #bc483e; near: 0; far: 65;",
         aframeAssets(
-          aframeMixin(id = "cube",
-                      geometry = "primitive: box; height: 0.5; width: 0.5; depth: 0.5",
-                      material = "color: #EF2D5E; transparent: true; opacity: 0.2"),
-          aframeMixin(id = "cube-collided",
-                      material = "color: #F2E646;"),
-          aframeMixin(id = "cube-grabbed",
-                      material = "color: #F2E646;"),
-          atags$mixin(id = "point", class = "point",
-                      geometry = "primitive: sphere; radius: 0.01",
-                      material = "color: yellow;")
         ),
         # Hand conttols
         aframeEntity(
           id = "lefthand",
           `static-body`="shape: sphere; sphereRadius: 0.02;",
           `vive-controls`="hand: left",
-          `sphere-collider`="objects: .grabbable;",
+          `sphere-collider`="objects: .grabbable, .hoverable;",
           grab = "",
           stretch = ""
         ),
@@ -85,41 +76,43 @@ shinyUI(fluidPage(
           id = "righthand",
           `static-body`="shape: sphere; sphereRadius: 0.02;",
           `vive-controls`="hand: right",
-          `sphere-collider`="objects: .grabbable;",
+          `sphere-collider`="objects: .grabbable, .hoverable;",
           grab = "",
           stretch = ""
         ),
         aframeEntity(
+          id = "plotcontainer",
           position = "0 1.5 -0.5",
           geometry = "primitive: box; width: 0.5; height: 0.5; depth: 0.5",
           material = "transparent: true; opacity: 0;",
           `dynamic-body` = "shape: box;",
           class = "grabbable",
-          id = "plotcontainer",
           sleepy = "angularDamping: 0; speedLimit: 1",
           `collision-filter` = "group: plots; collidesWith: plots, default;",
-          aScatter3dOutput("myplot")
+          aScatter3dOutput("myplot"),
+          aframeEntity(`plot-axis` = "size: 0.5;")          
         ),
-        aframeBox(
-          position = "-1 1.5 -0.5",
-          width = "0.25", height = "0.25", depth = "0.25",
-          material = "color: blue",
-          `dynamic-body` = "",
-          `collision-filter` = "group: notplots; collidesWith: notplots, default;",
-          sleepy = "",
-          class = "grabbable",
-          id = "filterbox"
-        ),
-        aframeBox(
-          position = "-1 1.5 0.5",
-          width = "0.25", height = "0.25", depth = "0.25",
-          material = "color: blue",
-          `dynamic-body` = "",
-          `collision-filter` = "group: notplots; collidesWith: notplots, default;",
-          sleepy = "",
-          class = "grabbable",
-          id = "filterbox2"
-        ),
+        # aframeBox(
+        #   position = "-1 1.5 -0.5",
+        #   width = "0.25", height = "0.25", depth = "0.25",
+        #   material = "color: blue",
+        #   #`plot-axis` = "",
+        #   #`dynamic-body` = "",
+        #   #`collision-filter` = "group: notplots; collidesWith: notplots, default;",
+        #   #sleepy = "",
+        #   #class = "grabbable",
+        #   id = "testbox"
+        # ),
+        # aframeBox(
+        #   position = "-1 1.5 0.5",
+        #   width = "0.25", height = "0.25", depth = "0.25",
+        #   material = "color: blue",
+        #   `dynamic-body` = "",
+        #   `collision-filter` = "group: notplots; collidesWith: notplots, default;",
+        #   sleepy = "",
+        #   class = "grabbable",
+        #   id = "filterbox2"
+        # ),
         aframeEntity(
           position = ".5 1.5 0",
           aDataFrameOutput("mydat"),

@@ -16,6 +16,10 @@ hands to stretch or shrink it
 
 ### Latest Updates
 
+* Starting plot bulding UI
+    * `plot-axis` component detects hovering over a plot axis and
+      highlights it. Will expand to receive
+      drag&drop interactions to map dataset variables to an axis
 * `stretch` component allows for two-handed grab and stretch of entities.
   Currently incomplete:
     * Updating the physics body shape during stretch greatly degrades
@@ -57,7 +61,7 @@ in offering this experience, but I can only test with the Vive for now.
 WebVR is still experimental and only available in test versions of browsers. 
 Currently, only [Chromium](https://webvr.info/get-chrome/) 
 supports the full experience with hand controllers. Also, I'm recommending
-[this archived Chromium build](https://drive.google.com/drive/folders/0BzudLt22BqGRbHdGOTdiaTBkZXM) 
+[the September 23rd archived Chromium build](https://drive.google.com/drive/folders/0BzudLt22BqGRbHdGOTdiaTBkZXM) 
 for Adit because the latest version doesn't always get along with physics. 
 
 After installing Chromium, you **must** enable two options for WebVR to work:
