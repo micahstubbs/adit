@@ -1,16 +1,56 @@
 AFRAME.registerComponent('data-frame', {
   // Define component properties.
-  schema: { },
+  schema: { 
+    data: { default: [] },
+    columnClass: { default: 'grabbable' },
+    columnMixin: { default: 'data-column' }
+  },
   /**
    * Run when component is attached.
    * @member {Element} el - Entity.
    * @member data - Component data.
    */
   init: function () {
-    // Do stuff using `this.el` and `this.data`.
-    this.el.setAttribute("layout", "type: box; margin: .08");
-    //this.el.setAttribute("geometry", "plane");
-    //this.el.setAttribute("material", "side: double; color: white;");
-    //this.el.setAttribute("mixin", "cube");
+    this.el.setAttribute("layout", "type: box; margin: .08;");
+    this.myCols = [];
+  },
+  
+  update: function() {
+    /*var cols = d3.select('#' + this.el.id).
+      data(this.data.data);
+    
+    cols.enter().append("a-entity").
+      attr('data-frame-column', function (d) {
+        
+      })*/
+    var frameEl = this.el;
+    var schemaDat = this.data;
+    frameEl.childNodes.forEach(function(col) {
+      if(col.nodeType == Node.ELEMENT_NODE &&
+         col.hasAttribute('data-frame-column')) {
+        col.components['data-frame-column'].remove();
+        frameEl.removeChild(col);
+      }
+    });
+    this.myCols = schemaDat.data;
+    this.myCols.forEach(function(c) {
+      newCol = document.createElement('a-plane');
+      frameEl.appendChild(newCol);
+      newCol.className = schemaDat.columnClass;
+      newCol.setAttribute('data-frame-column', c);
+      newCol.setAttribute('mixin', schemaDat.columnMixin);
+    });
+    
+        var colliderEls = document.querySelectorAll('a-entity[sphere-collider]');
+    colliderEls.forEach(function (collEl) {
+      //if(coll.components[this.data.colliders].hasLoaded) {
+        collEl.components['sphere-collider'].update();
+      //}
+    });
+  },
+  
+  updateData: function(newDat) {
+    this.data.data = newDat;
+    this.update();
   }
 });

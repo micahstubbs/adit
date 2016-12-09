@@ -21,7 +21,8 @@ shinyUI(fluidPage(
     tags$script(src = "cannon.js"),
     tags$script(src = "components/ground.js"),
     tags$script(src = "shaders/skyGradient.js"),
-    tags$script(src = "components/aframe-layout-component.js"),
+    #tags$script(src = "components/aframe-layout-component.js"),
+    tags$script(src = "components/kframe.js"),
     #tags$script(src = "components/aframe-bmfont-text-component.js"),
     tags$script(src = "components/aframe-draw-component.js"),
     tags$script(src = "components/aframe-textwrap-component.js"),
@@ -60,7 +61,7 @@ shinyUI(fluidPage(
     
     mainPanel(
       aframeScene(
-        physics = "gravity: 0;",
+        physics = "gravity: 0; debug: true;",
         fog = "color: #bc483e; near: 0; far: 65;",
         aframeAssets(
           tags$img(id = "arrow", src = "/textures/arrow.png"),
@@ -73,8 +74,17 @@ shinyUI(fluidPage(
                       material = "color: #F2E646;"),
           aframeMixin(id = "controller",
                       `static-body`="shape: sphere; sphereRadius: 0.02;",
-                      `sphere-collider`="objects: .grabbable, .hoverable;",
-                      grab = "", stretch = "", `drag-drop` = "")
+                      `sphere-collider`="objects: .grabbable, .hoverable, .draggable;",
+                      grab = "", stretch = "", `drag-drop` = ""),
+          atags$mixin(id = "data-column",
+                      `dynamic-body` = "",
+                      sleepy = "",
+                      `collision-filter` = "collidesWith: ;",
+                      #geometry = "primitive: box; height: .075; width: 0.33; depth: 0.33",
+                      material = "color: #FFF;",
+                      draw = "background: #A0A0A0"),
+          atags$mixin(id = "data-column-collided",
+                      draw = "background: #A0F0F0")
         ),
         # Hand conttols
         aframeEntity(
@@ -123,7 +133,7 @@ shinyUI(fluidPage(
         #   id = "filterbox2"
         # ),
         aframeEntity(
-          position = ".5 1.5 0",
+          position = ".5 1.5 -0.5",
           aDataFrameOutput("mydat"),
           id = "datacontainer"
         ),
