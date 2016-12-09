@@ -105,7 +105,7 @@ AFRAME.registerComponent('stretch', {
     if(hitEl.components['dynamic-body']) {
       var bodycomp = hitEl.components['dynamic-body'];
       bodycomp.system.removeBody(bodycomp.body);
-      bodycomp.el.sceneEl.object3D.remove(bodycomp.wireframe);
+      //bodycomp.el.sceneEl.object3D.remove(bodycomp.wireframe);
       bodycomp.initBody();
     }
 

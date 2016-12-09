@@ -59,9 +59,10 @@ shinyUI(fluidPage(
     
     mainPanel(
       aframeScene(
-        physics = "debug: true; gravity: 0;",
+        physics = "gravity: 0;",
         fog = "color: #bc483e; near: 0; far: 65;",
         aframeAssets(
+          tags$img(id = "arrow", src = "/textures/arrow.png")
         ),
         # Hand conttols
         aframeEntity(
@@ -90,7 +91,9 @@ shinyUI(fluidPage(
           sleepy = "angularDamping: 0; speedLimit: 1",
           `collision-filter` = "group: plots; collidesWith: plots, default;",
           aScatter3dOutput("myplot"),
-          aframeEntity(`plot-axis` = "size: 0.5;")          
+          aframeEntity(`plot-axis` = "axis: x; size: 0.5;"),
+          aframeEntity(`plot-axis` = "axis: y; size: 0.5;"),
+          aframeEntity(`plot-axis` = "axis: z; size: 0.5;")
         ),
         # aframeBox(
         #   position = "-1 1.5 -0.5",
