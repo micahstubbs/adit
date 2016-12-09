@@ -9,7 +9,7 @@ AFRAME.registerComponent('sleepy', {
     holdState: {default: 'grabbed'}
   },
   
-  //dependencies: ['dynamic-body'],
+  dependencies: ['dynamic-body'],
 
   init: function () {
     if (this.el.body) {
@@ -20,7 +20,8 @@ AFRAME.registerComponent('sleepy', {
   },
   
   initBody: function () {
-    this.el.body.world.allowSleep = true;
+    this.el.sceneEl.systems.physics.world.allowSleep = true;
+    //this.el.body.world.allowSleep = true;
     this.update();
     this.play();
     this.resumeState({detail: {state: this.data.holdState}});
