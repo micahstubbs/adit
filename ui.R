@@ -62,30 +62,37 @@ shinyUI(fluidPage(
         physics = "gravity: 0;",
         fog = "color: #bc483e; near: 0; far: 65;",
         aframeAssets(
-          tags$img(id = "arrow", src = "/textures/arrow.png")
+          tags$img(id = "arrow", src = "/textures/arrow.png"),
+          aframeMixin(id = "plottheme",
+                      geometry = "primitive: box; height: 0.5; width: 0.5; depth: 0.5",
+                      material = "color: #EF2D5E; transparent: true; opacity: 0.2; side: double;"),
+          aframeMixin(id = "plottheme-collided",
+                      material = "color: #F2E646;"),
+          aframeMixin(id = "plottheme-grabbed",
+                      material = "color: #F2E646;"),
+          aframeMixin(id = "controller",
+                      `static-body`="shape: sphere; sphereRadius: 0.02;",
+                      `sphere-collider`="objects: .grabbable, .hoverable;",
+                      grab = "",
+                      stretch = "")
         ),
         # Hand conttols
         aframeEntity(
           id = "lefthand",
-          `static-body`="shape: sphere; sphereRadius: 0.02;",
           `vive-controls`="hand: left",
-          `sphere-collider`="objects: .grabbable, .hoverable;",
-          grab = "",
-          stretch = ""
+          mixin = "controller"
         ),
         aframeEntity(
           id = "righthand",
-          `static-body`="shape: sphere; sphereRadius: 0.02;",
           `vive-controls`="hand: right",
-          `sphere-collider`="objects: .grabbable, .hoverable;",
-          grab = "",
-          stretch = ""
+          mixin = "controller"
         ),
         aframeEntity(
           id = "plotcontainer",
+          mixin = "plottheme",
           position = "0 1.5 -0.5",
-          geometry = "primitive: box; width: 0.5; height: 0.5; depth: 0.5",
-          material = "transparent: true; opacity: 0;",
+          #geometry = "primitive: box; width: 0.5; height: 0.5; depth: 0.5",
+          #material = "transparent: true; opacity: 0;",
           `dynamic-body` = "shape: box;",
           class = "grabbable",
           sleepy = "angularDamping: 0; speedLimit: 1",

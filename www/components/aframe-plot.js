@@ -65,7 +65,7 @@ AFRAME.registerComponent('plot-axis', {
     makeAxis(this.axis, pos, rot);
     makeAxis(this.mirror, pos2, rot2);
 
-    var colliderEls = document.querySelectorAll('[' + 
+    var colliderEls = document.querySelectorAll('a-entity[' + 
                                                 compDat.collider + 
                                                 ']');
     colliderEls.forEach(function (collEl) {
@@ -73,9 +73,6 @@ AFRAME.registerComponent('plot-axis', {
         collEl.components[compDat.collider].update();
       //}
     });
-    
-    this.system.registerMe(this.el);
-
   },
   
   play: function () {
@@ -112,22 +109,6 @@ AFRAME.registerComponent('plot-axis', {
       this.axis.setAttribute('material', 'visible', false);
       this.mirror.setAttribute('material', 'visible', false);
     }
-  },
-  remove: function () {
-    this.system.unregisterMe(this.el);
-  }
-});
-
-AFRAME.registerSystem('plot-axis', {
-  init: function () {
-    this.entities = [];
-  },
-  registerMe: function (el) {
-    this.entities.push(el);
-  },
-  unregisterMe: function (el) {
-    var index = this.entities.indexOf(el);
-    this.entities.splice(index, 1);
   }
 });
 
