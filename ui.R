@@ -32,7 +32,8 @@ shinyUI(fluidPage(
     tags$script(src = "components/aframe-physics-sleepy.js"),
     tags$script(src = "components/aframe-physics-collision-filter.js"),
     tags$script(src = "components/aframe-stretch.js"),
-    tags$script(src = "components/aframe-plot.js")
+    tags$script(src = "components/aframe-plot.js"),
+    tags$script(src = "components/aframe-drag-drop.js")
    
 
   ),
@@ -73,8 +74,7 @@ shinyUI(fluidPage(
           aframeMixin(id = "controller",
                       `static-body`="shape: sphere; sphereRadius: 0.02;",
                       `sphere-collider`="objects: .grabbable, .hoverable;",
-                      grab = "",
-                      stretch = "")
+                      grab = "", stretch = "", `drag-drop` = "")
         ),
         # Hand conttols
         aframeEntity(
@@ -102,17 +102,16 @@ shinyUI(fluidPage(
           aframeEntity(`plot-axis` = "axis: y; size: 0.5;"),
           aframeEntity(`plot-axis` = "axis: z; size: 0.5;")
         ),
-        # aframeBox(
-        #   position = "-1 1.5 -0.5",
-        #   width = "0.25", height = "0.25", depth = "0.25",
-        #   material = "color: blue",
-        #   #`plot-axis` = "",
-        #   #`dynamic-body` = "",
-        #   #`collision-filter` = "group: notplots; collidesWith: notplots, default;",
-        #   #sleepy = "",
-        #   #class = "grabbable",
-        #   id = "testbox"
-        # ),
+        aframeBox(
+          position = "-1 1.5 -0.5",
+          width = "0.25", height = "0.25", depth = "0.25",
+          material = "color: blue",
+          `dynamic-body` = "",
+          `collision-filter` = "group: notplots; collidesWith: notplots, default;",
+          sleepy = "",
+          class = "grabbable",
+          id = "testbox"
+        ),
         # aframeBox(
         #   position = "-1 1.5 0.5",
         #   width = "0.25", height = "0.25", depth = "0.25",

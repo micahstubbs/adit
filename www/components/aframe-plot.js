@@ -4,7 +4,7 @@ AFRAME.registerComponent('plot-axis', {
     axis: { default: 'x' },
     material: { default: 'src: #arrow' },
     size: { default: 1 },
-    hoverState: { default: 'collided' },
+    hoverState: { default: 'hovered' },
     hoverClass: { default: 'hoverable' },
     collider: { default: 'sphere-collider' }
   },
