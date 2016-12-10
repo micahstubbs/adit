@@ -13,19 +13,38 @@ library(ggplot2)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
-  mappings <- list(x = "Sepal.Length",
+  mappings <- c(x = "Sepal.Length",
                 y = "Sepal.Width",
                 z = "Petal.Length",
                 color = "Petal.Width",
                 shape = "Species")
-  
-  mappings_aes <- reactive({
-    if(!is.null(input$mappings$variable)) {
-      mappings[input$mappings$mapping] <- input$mappings$variable
+  # mappings <- c(x = "wt",
+  #               y = "mpg",
+  #               z = "hp")
+  map_message <- reactiveValues()
+  dummy <- reactiveValues(x = 0)
+  mappings_string <- reactive({
+    dummy$x
+    input$mapppings
+    cat("mappings_aes\n")
+    reactiveValuesToList(map_message)
+    if(!is.null(map_message$variable)) {
+      mappings[map_message$mapping] <- map_message$variable
     }
-      mappings <- mappings[mappings %in% names(selected_data())]
-      do.call(aes_string, mappings)
+    mappings
   })
+  
+  observeEvent(input$mappings, {
+    lapply(input$mappings, function(x)cat(paste0(x, "\n")))
+    map_message$variable <- input$mappings$variable
+    map_message$mapping <- input$mappings$mapping
+    map_message$chart <- map_message$chart
+    dummy$x <- dummy$x + 1
+    cat(dummy$x, "\n")
+  })
+  # observe({
+  #   mappings <- mappings[mappings %in% names(selected_data())]
+  #   })
   
   selected_data <- reactive({
     switch(input$datasource, 
@@ -43,9 +62,16 @@ shinyServer(function(input, output) {
     # setup plot in ggplot and the aScatter3d widget will translate it into
     # aframe
     #cat(names(as.character(mappings_aes())), as.character(mappings_aes()))
-    req(length(mappings_aes()) > 0)
+    cat("plot", dummy$x, "\n")
+    input$mappings
+    dummy$x
+    mappings <- mappings_string()
+    mappings <- mappings[mappings %in% names(selected_data())]
+    req(length(mappings) > 0)
+    mappings_aes <- do.call(aes_string, as.list(mappings))
     
-    plt <- ggplot(iris, mappings_aes()) +
+    
+    plt <- ggplot(selected_data(), mappings_aes) +
       geom_point()
     aScatter3d(plt)
   })
