@@ -26,15 +26,13 @@ shinyServer(function(input, output) {
   })
   
   output$myplot <- renderAScatter3d({
-    x <- scales::rescale(iris[[1]], to = c(-0.25, 0.25))
-    y <- scales::rescale(iris[[2]], to = c(-0.25, 0.25))
-    z <- scales::rescale(iris[[3]], to = c(-0.25, 0.25))
-    aScatter3d(list(
-      parentTheme = "cube",
-      x = x, y = y, z = z, 
-      color = rgb(colorRamp(RColorBrewer::brewer.pal(5, "Spectral"))(scales::rescale(iris$Petal.Width)), maxColorValue = 255),
-      geom = c("sphere", "box", 
-               "torus")[as.integer(as.factor(iris$Species))]))
+    # setup plot in ggplot and the aScatter3d widget will translate it into
+    # aframe
+    plt <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, z = Petal.Length,
+                     color = Petal.Width, 
+                     shape = Species)) +
+      geom_point()
+    aScatter3d(plt)
   })
   
   output$mydat <- renderADataFrame({

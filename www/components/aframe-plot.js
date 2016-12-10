@@ -112,3 +112,38 @@ AFRAME.registerComponent('plot-axis', {
   }
 });
 
+AFRAME.registerComponent("plot-area", {
+  schema: { 
+    x: { default: [] },
+    y: { default: [] },
+    z: { default: [] },
+    geometry: { default: [] },
+    material: { default: [] }
+  },
+  
+  init: function () {
+    
+  },
+  
+  update: function () {
+    var el = this.el;
+    var dat = this.data; 
+    while(el.lastChild) {
+      el.removeChild(el.lastChild);
+    }
+    registerMark = function(x, y, z, geom, mat) {
+      var mark;
+      mark = document.createElement("a-entity");
+      mark.setAttribute("position", {x: x, y: y, z: z});
+      mark.setAttribute("geometry", geom);
+      mark.setAttribute("material", mat);
+      el.appendChild(mark);
+    };
+
+    for(i = 0; i < dat.x.length; i++) {
+      registerMark(
+        dat.x[i], dat.y[i], dat.z[i], dat.geometry[i], dat.material[i]
+      );
+    }
+  }
+});
