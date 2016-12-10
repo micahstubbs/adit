@@ -101,16 +101,14 @@ shinyUI(fluidPage(
           id = "plotcontainer",
           mixin = "plottheme",
           position = "0 1.5 -0.5",
+          plot = "size: 0.5",
           #geometry = "primitive: box; width: 0.5; height: 0.5; depth: 0.5",
           #material = "transparent: true; opacity: 0;",
           `dynamic-body` = "shape: box;",
           class = "grabbable",
           sleepy = "angularDamping: 0; speedLimit: 1",
           `collision-filter` = "group: plots; collidesWith: plots, default;",
-          aScatter3dOutput("myplot"),
-          aframeEntity(`plot-axis` = "axis: x; size: 0.5;"),
-          aframeEntity(`plot-axis` = "axis: y; size: 0.5;"),
-          aframeEntity(`plot-axis` = "axis: z; size: 0.5;")
+          aScatter3dOutput("myplot")
         ),
         aframeBox(
           position = "-1 1.5 -0.5",

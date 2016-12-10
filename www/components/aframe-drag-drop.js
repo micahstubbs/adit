@@ -1,4 +1,4 @@
-// Allow scaling via two-handed grab and stretch
+// Allow drag-and-drop interactions
 
 AFRAME.registerComponent('drag-drop', {
   // seletor to other controller
@@ -44,8 +44,10 @@ AFRAME.registerComponent('drag-drop', {
     if(hitEls.length !== 0) {
       var hitEl = hitEls[0]; 
       var carried = this.carried;
-      hitEl.emit(this.data.dropEvent, { drop: 'receive', el: carried });
-      if (carried) carried.emit(this.data.dropEvent, { drop: 'give', el: hitEl });
+      hitEl.emit(this.data.dropEvent, 
+                 { drop: 'receive', dropped: carried, on: hitEl });
+      if (carried) carried.emit(this.data.dropEvent, 
+                                { drop: 'give', dropped: carried, on: hitEl });
       // clear list of backup targets to prevent triggering hover
       this.hitEls = [];
       var hoveredState = this.data.hoveredState;

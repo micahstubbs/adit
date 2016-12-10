@@ -13,8 +13,19 @@ library(ggplot2)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
+  mappings <- list(x = "Sepal.Length",
+                y = "Sepal.Width",
+                z = "Petal.Length",
+                color = "Petal.Width",
+                shape = "Species")
+  
+  mappings_aes <- reactive({
+    mappings[input$mappings$mapping] <- input$mappings$variable
+    do.call(aes_string, mappings)
+  })
   
   selected_data <- reactive({
+    mappings = list()
     switch(input$datasource, 
            "iris" = iris,
            "mtcars" = mtcars,
@@ -25,12 +36,12 @@ shinyServer(function(input, output) {
     head(selected_data())
   })
   
+
   output$myplot <- renderAScatter3d({
     # setup plot in ggplot and the aScatter3d widget will translate it into
     # aframe
-    plt <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, z = Petal.Length,
-                     color = Petal.Width, 
-                     shape = Species)) +
+    req(length(mappings_aes()) > 0)
+    plt <- ggplot(iris, mappings_aes()) +
       geom_point()
     aScatter3d(plt)
   })

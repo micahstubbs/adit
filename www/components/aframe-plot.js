@@ -1,3 +1,21 @@
+AFRAME.registerComponent('plot', {
+  schema: { size: { default: 0.5 } },
+  dependencies: ['geometry'],
+  init: function() {
+    var self = this;
+    var size = this.data.size;
+    self.axes = [];
+    // register axes
+    ['x', 'y', 'z'].forEach(function (axis) {
+      var axEl = document.createElement('a-entity');
+      self.el.appendChild(axEl);
+      axEl.setAttribute('plot-axis', { axis: axis, size: size });
+      self.axes.push(axEl);
+    });
+    
+  }
+});
+
 AFRAME.registerComponent('plot-axis', {
   // Define component properties.
   schema: {

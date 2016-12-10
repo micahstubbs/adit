@@ -16,13 +16,6 @@ AFRAME.registerComponent('data-frame', {
   },
   
   update: function() {
-    /*var cols = d3.select('#' + this.el.id).
-      data(this.data.data);
-    
-    cols.enter().append("a-entity").
-      attr('data-frame-column', function (d) {
-        
-      })*/
     var frameEl = this.el;
     var schemaDat = this.data;
     frameEl.childNodes.forEach(function(col) {
