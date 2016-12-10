@@ -43,7 +43,7 @@ shinyUI(fluidPage(
     # Sidebar with a slider input for number of bins 
   sidebarLayout(
     sidebarPanel(
-      tags$p("Adit is a tool fo exploratory data analysis",
+      tags$p("Adit is a tool for exploratory data analysis",
              "in virtual reality using the HTC Vive.",
              "Adit brings",
              "together the R language for statistical computing and",
@@ -61,7 +61,7 @@ shinyUI(fluidPage(
     
     mainPanel(
       aframeScene(
-        physics = "gravity: 0",
+        physics = "gravity: 0; debug: true",
         fog = "color: #bc483e; near: 0; far: 65;",
         aframeAssets(
           tags$img(id = "arrow", src = "/textures/arrow.png"),
@@ -76,14 +76,14 @@ shinyUI(fluidPage(
                       `static-body`="shape: sphere; sphereRadius: 0.02;",
                       `sphere-collider`="objects: .grabbable, .hoverable, .draggable;",
                       grab = "", stretch = "", `drag-drop` = ""),
-          atags$mixin(id = "data-column",
+          atags$mixin(id = "datacolumn",
                       `dynamic-body` = "",
                       sleepy = "",
                       `collision-filter` = "collidesWith: ;",
                       #geometry = "primitive: box; height: .075; width: 0.33; depth: 0.33",
                       material = "color: #FFF;",
                       draw = "background: #A0A0A0"),
-          atags$mixin(id = "data-column-collided",
+          atags$mixin(id = "datacolumn-collided",
                       draw = "background: #A0F0F0")
         ),
         # Hand conttols
@@ -131,7 +131,7 @@ shinyUI(fluidPage(
         #   id = "filterbox2"
         # ),
         aframeEntity(
-          position = ".5 1.5 -0.5",
+          position = ".6 1 -0.5",
           aDataFrameOutput("mydat"),
           id = "datacontainer"
         ),

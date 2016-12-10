@@ -3,36 +3,46 @@ AFRAME.registerComponent('data-frame', {
   schema: { 
     data: { default: [] },
     columnClass: { default: 'grabbable' },
-    columnMixin: { default: 'data-column' }
+    columnMixin: { default: 'datacolumn' },
+    layout: { default: "type: box; margin: .1;" }
   },
+  
+  dependencies: ["position"],
   /**
    * Run when component is attached.
    * @member {Element} el - Entity.
    * @member data - Component data.
    */
   init: function () {
-    this.el.setAttribute("layout", "type: box; margin: .08;");
-    this.myCols = [];
+    this.el.setAttribute("layout", this.data.layout);
+    //this.myCols = [];
   },
   
   update: function() {
     var frameEl = this.el;
     var schemaDat = this.data;
-    frameEl.childNodes.forEach(function(col) {
+    /*frameEl.childNodes.forEach(function(col) {
       if(col.nodeType == Node.ELEMENT_NODE &&
-         col.hasAttribute('data-frame-column')) {
-        col.components['data-frame-column'].remove();
+           col.hasAttribute('data-frame-column')) {
         frameEl.removeChild(col);
       }
-    });
-    this.myCols = schemaDat.data;
-    this.myCols.forEach(function(c) {
-      newCol = document.createElement('a-plane');
+    });*/
+    
+    while(frameEl.lastChild) {
+      frameEl.lastChild.components['dynamic-body'].remove();
+      frameEl.removeChild(frameEl.lastChild);
+    }
+
+    //this.myCols = schemaDat.data;
+    schemaDat.data.forEach(function(c) {
+      var newCol = document.createElement('a-plane');
       frameEl.appendChild(newCol);
       newCol.className = schemaDat.columnClass;
       newCol.setAttribute('data-frame-column', c);
       newCol.setAttribute('mixin', schemaDat.columnMixin);
     });
+   
+    //this.el.setAttribute("layout", schemaDat.layout);
     
         var colliderEls = document.querySelectorAll('a-entity[sphere-collider]');
     colliderEls.forEach(function (collEl) {
@@ -43,7 +53,11 @@ AFRAME.registerComponent('data-frame', {
   },
   
   updateData: function(newDat) {
+    //if(this.el.hasAttribute('layout')) this.el.components.layout.remove();
     this.data.data = newDat;
+    this.el.components.layout.children = [];
     this.update();
+    this.el.components.layout.update();
+    //this.el.setAttribute('layout', this.data.layout);
   }
 });
