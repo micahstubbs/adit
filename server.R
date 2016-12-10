@@ -34,18 +34,13 @@ shinyServer(function(input, output) {
   output$myplot <- renderAScatter3d({
     # setup plot in ggplot and the aScatter3d widget will translate it into
     # aframe
-    cat("plot update\n")
     update <- input$mappings
     if(!is.null(update$variable)) {
-      cat(paste("mapping update:", update$mapping, update$variable, "\n"))
       mappings[update$mapping] <<- update$variable
     }
     usable_mappings <- mappings[mappings %in% names(selected_data())]
-    cat(paste(names(mappings), mappings, sep = ": "), "\n")
-    cat(usable_mappings[c("x", "y", "z")])
     req(!anyNA(usable_mappings[c("x", "y", "z")]), 
         cancelOutput = TRUE)
-    cat("plotting\n")
     mappings_aes <- do.call(aes_string, as.list(usable_mappings))
     plt <- ggplot(selected_data(), mappings_aes) +
       geom_point()

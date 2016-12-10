@@ -16,10 +16,23 @@ hands to stretch or shrink it
 
 ### Latest Updates
 
-* Starting plot bulding UI
-    * `plot-axis` component detects hovering over a plot axis and
-      highlights it. Will expand to receive
-      drag&drop interactions to map dataset variables to an axis
+* Interactive plot building: plots can now be built within Adit by dragging
+  data columns onto the axes.
+    * `drag-drop` component for controllers. Tells targets when they are
+      hovered over and tells targets and carried entities when a successfull
+      drag-and-drop interaction occurs. 
+    * `data-frame` component receives data from
+      [shinyaframe](http://github.com/wmurphyrd/shinyaframe) 
+      `aDataFrame` widget and creates `data-frame-column` entities that
+      can be dragged onto plot axes to update mapping
+* `plot` components
+    * `plot`: contains `plot-area`, creates and manages x, y, and z
+      `plot-axis` components
+    * `plot-axis`: target for `drag-drop`, highlights when hovered 
+    * `plot-area`: receives data from
+      [shinyaframe](http://github.com/wmurphyrd/shinyaframe) 
+      `aScatter3d` widget
+      and manages data point display
 * `stretch` component allows for two-handed grab and stretch of entities.
   Currently incomplete:
     * Updating the physics body shape during stretch greatly degrades
