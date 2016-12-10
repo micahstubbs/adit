@@ -20,12 +20,14 @@ shinyServer(function(input, output) {
                 shape = "Species")
   
   mappings_aes <- reactive({
-    mappings[input$mappings$mapping] <- input$mappings$variable
-    do.call(aes_string, mappings)
+    if(!is.null(input$mappings$variable)) {
+      mappings[input$mappings$mapping] <- input$mappings$variable
+    }
+      mappings <- mappings[mappings %in% names(selected_data())]
+      do.call(aes_string, mappings)
   })
   
   selected_data <- reactive({
-    mappings = list()
     switch(input$datasource, 
            "iris" = iris,
            "mtcars" = mtcars,
@@ -40,7 +42,9 @@ shinyServer(function(input, output) {
   output$myplot <- renderAScatter3d({
     # setup plot in ggplot and the aScatter3d widget will translate it into
     # aframe
+    #cat(names(as.character(mappings_aes())), as.character(mappings_aes()))
     req(length(mappings_aes()) > 0)
+    
     plt <- ggplot(iris, mappings_aes()) +
       geom_point()
     aScatter3d(plt)

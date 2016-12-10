@@ -61,7 +61,7 @@ shinyUI(fluidPage(
     
     mainPanel(
       aframeScene(
-        physics = "gravity: 0; debug: true;",
+        physics = "gravity: 0",
         fog = "color: #bc483e; near: 0; far: 65;",
         aframeAssets(
           tags$img(id = "arrow", src = "/textures/arrow.png"),
