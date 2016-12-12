@@ -23,7 +23,7 @@ shinyUI(fluidPage(
     tags$script(src = "shaders/skyGradient.js"),
     #tags$script(src = "components/aframe-layout-component.js"),
     tags$script(src = "components/kframe.js"),
-    #tags$script(src = "components/aframe-bmfont-text-component.js"),
+    tags$script(src = "components/aframe-bmfont-text-component.js"),
     tags$script(src = "components/aframe-draw-component.js"),
     tags$script(src = "components/aframe-textwrap-component.js"),
     tags$script(src = "components/data-frame.js"),

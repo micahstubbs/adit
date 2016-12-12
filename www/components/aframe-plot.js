@@ -1,5 +1,13 @@
 AFRAME.registerComponent('plot', {
-  schema: { size: { default: 0.5 } },
+  schema: { 
+    size: { default: 0.5 },
+    xbreaks: { default: '' },
+    xlabels: { default: '' },
+    ybreaks: { default: '' },
+    ylabels: { default: '' },
+    zbreaks: { default: '' },
+    zlabels: { default: '' }
+  },
   dependencies: ['geometry'],
   init: function() {
     var self = this;
@@ -13,13 +21,43 @@ AFRAME.registerComponent('plot', {
       self.axes.push(axEl);
     });
     
+  },
+  
+  update: function() {
+    var dat = this.data;
+    this.axes.forEach(function(ax) {
+      if(!ax.components['plot-axis'].data) return;
+      var newBreaks, newLabels;
+      switch(ax.components['plot-axis'].data.axis) {
+        case 'x':
+          newBreaks = dat.xbreaks;
+          newLabels = dat.xlabels;
+          break;
+        case 'y':
+          newBreaks = dat.ybreaks;
+          newLabels = dat.ylabels;
+          break;
+        case 'z':
+          newBreaks = dat.zbreaks;
+          newLabels = dat.zlabels;
+          break;
+      }
+      console.log('send axis update', newBreaks, newLabels);
+      ax.setAttribute('plot-axis', {breaks: newBreaks, labels: newLabels});
+
+    }); 
   }
 });
 
+// manages scale labels and receiving user mapping input
 AFRAME.registerComponent('plot-axis', {
   // Define component properties.
   schema: {
     axis: { default: 'x' },
+    breaks: { default: [] },
+    labels: { default: [] },
+    title: { default: '' },
+    fontScale: { default: 0.15 },
     material: { default: 'src: #arrow' },
     size: { default: 1 },
     hoverState: { default: 'hovered' },
@@ -29,11 +67,17 @@ AFRAME.registerComponent('plot-axis', {
   //dependencies: ['material'],
   
   init: function () {
+    // create axis drop-targets for mapping UI
     var vec3 = AFRAME.utils.coordinates.parse;
     var pos = vec3('0 0 0'), 
         rot = vec3('0 0 0'), 
         pos2 = vec3('0 0 0'), 
-        rot2 = vec3('0 0 0'), 
+        rot2 = vec3('0 0 0'),
+        posscale = vec3('0 0 0'),
+        rotscale = vec3('0 0 0'),
+        posText = vec3('0 0 0'),
+        rotText = vec3('0 0 0'),
+        text,
         compDat = this.data;
     // counter keeps hover events working when the collide zones overlap
     this.numHovered = 0;
@@ -42,6 +86,8 @@ AFRAME.registerComponent('plot-axis', {
     this.el.appendChild(this.axis);
     this.mirror = document.createElement('a-entity');
     this.el.appendChild(this.mirror);
+    this.axisScale = document.createElement('a-entity');
+    this.el.appendChild(this.axisScale);
  
     makeAxis = function(el, pos, rot) {
       el.className = compDat.hoverClass;
@@ -64,6 +110,9 @@ AFRAME.registerComponent('plot-axis', {
         pos2.y = -1 * pos.y;
         rot2.x = -1 * rot.x;
         rot2.z = rot.z;
+        posText.y = pos.y;
+        posText.z = compDat.size / 2 + 0.05;
+        rotText.x = -45;
         break;
       case 'y':
         pos.z = -1 * compDat.size / 2;
@@ -82,6 +131,13 @@ AFRAME.registerComponent('plot-axis', {
     
     makeAxis(this.axis, pos, rot);
     makeAxis(this.mirror, pos2, rot2);
+    this.axisScale.setAttribute('plot-axis-text',{
+      labels: compDat.labels, 
+      breaks: compDat.breaks, 
+      fontScale: compDat.fontScale
+    });
+    this.axisScale.setAttribute('position', posText);
+    this.axisScale.setAttribute('rotation', rotText);
 
     var colliderEls = document.querySelectorAll('a-entity[' + 
                                                 compDat.collider + 
@@ -91,6 +147,25 @@ AFRAME.registerComponent('plot-axis', {
         collEl.components[compDat.collider].update();
       //}
     });
+    
+  },
+  
+
+  update: function(oldData) {
+    console.log('axis text update called');
+    if(oldData.breaks !== this.data.breaks ||
+        oldData.labels !== this.data.labels ||
+        oldData.title !== this.data.title) {
+      console.log('axis text updated', this.data.labels);
+          //this.axisScale.setAttribute('bmfont-text', {
+          //  text: this.data.labels.join(' ') + '\n' + this.data.title
+          //});
+      this.axisScale.setAttribute('plot-axis-text', {
+        labels: this.data.labels,
+        breaks: this.data.breaks,
+        fontScale: this.data.fontScale
+      });
+    }
   },
   
   play: function () {
@@ -136,7 +211,13 @@ AFRAME.registerComponent("plot-area", {
     y: { default: [] },
     z: { default: [] },
     geometry: { default: [] },
-    material: { default: [] }
+    material: { default: [] },
+    xlabels: { default: [] },
+    xbreaks: { default: [] },
+    ylabels: { default: [] },
+    ybreaks: { default: [] },
+    zlabels: { default: [] },
+    zbreaks: { default: [] }    
   },
   
   init: function () {
@@ -163,5 +244,77 @@ AFRAME.registerComponent("plot-area", {
         dat.x[i], dat.y[i], dat.z[i], dat.geometry[i], dat.material[i]
       );
     }
+    // pass scale info up
+    el.parentEl.setAttribute('plot', {
+      xlabels: dat.xlabels,
+      xbreaks: dat.xbreaks,
+      ylabels: dat.ylabels,
+      ybreaks: dat.ybreaks,
+      zlabels: dat.zlabels,
+      zbreaks: dat.zbreaks
+    });
   }
+});
+
+AFRAME.registerComponent('plot-axis-text', {
+  schema: {
+    labels: { default: [] },
+    breaks: { default: [] },
+    fontScale: { default: 1 }
+  },
+  
+  init: function() {
+    console.log('plot axis text init');
+    this.labelEls = [];
+  },
+  
+  update: function() {
+    var diff = this.labelEls.length - this.data.labels.length,
+        schemaDat = this.data;
+    if(diff > 0) {
+      this.labelEls.splice(this.data.labels.length).forEach(function (rem){
+        rem.parentNode.removeChild(rem);
+      });
+    }
+    this.labelEls.forEach(function(labEl, i) {
+      labEl.setAttribute('bmfont-text', 'text', schemaDat.labels[i]);
+      labEl.setAttribute('position', 'x', schemaDat.breaks[i]);
+      labEl.setAttribute('scale', 
+                         schemaDat.fontScale + ' ' + 
+                           schemaDat.fontScale + ' ' + 
+                           schemaDat.fontScale);
+    });
+    if(diff < 0) {
+      this.addLabels(schemaDat.labels.slice(this.labelEls.length),
+                     schemaDat.breaks.slice(this.labelEls.length));
+    }
+
+  },
+  
+  addLabels: function(newLabels, newPositions) {
+    var frag = document.createDocumentFragment(),
+        schemaDat = this.data,
+        labelEls = this.labelEls,
+        self = this;
+    newLabels.forEach(function(lab, i) {
+      var labEl = document.createElement('a-entity'),
+          pos = newPositions[i] + self.offsetBreak(lab);
+      frag.appendChild(labEl);
+      labEl.setAttribute('bmfont-text', {
+        text: lab, width: 0, mode: 'nowrap',align: 'center'});
+      labEl.setAttribute('position', pos + ' 0 0');
+      labEl.setAttribute('scale', 
+                         schemaDat.fontScale + ' ' +
+                         schemaDat.fontScale + ' ' +
+                         schemaDat.fontScale);
+      labelEls.push(labEl);
+    });
+    this.el.appendChild(frag);
+  },
+  // compensate for width of string(approximate)
+  offsetBreak: function(lab){
+    // at default scale, characters are ~0.1m wide
+    return lab.length * -0.1 * this.data.fontScale;
+  }
+  
 });
