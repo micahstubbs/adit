@@ -64,7 +64,7 @@ shinyUI(fluidPage(
         physics = "gravity: 0",
         fog = "color: #bc483e; near: 0; far: 65;",
         aframeAssets(
-          tags$img(id = "arrow", src = "/textures/arrow.png"),
+          tags$img(id = "arrow", src = "textures/arrow.png"),
           aframeMixin(id = "plottheme",
                       geometry = "primitive: box; height: 0.5; width: 0.5; depth: 0.5",
                       material = "color: #EF2D5E; transparent: true; opacity: 0.2; side: double;"),
@@ -82,7 +82,7 @@ shinyUI(fluidPage(
                       `collision-filter` = "collidesWith: ;",
                       material = "color: #FFF; side: double"),
           atags$mixin(id = "datacolumn-collided",
-                      draw = "background: #A0F0F0")
+                      material = "color: #F2E646;")
         ),
         # Hand conttols
         aframeEntity(
