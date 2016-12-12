@@ -9,14 +9,19 @@ AFRAME.registerComponent('data-frame-column', {
   dependencies: ['position', 'rotation'],
 
   init: function () {
-    this.el.setAttribute('width' , '0.3');
-    this.el.setAttribute('height', '0.075');
-    this.el.setAttribute("textwrap", {
-      text: this.data.name.concat(" (", this.data.type, ")"),
-      font: "48px serif",
-      lineHeight: 50,
-      y: 48
-    });
+    var label = this.data.name,
+        width = 0.5, height = 0.085;
+    this.el.setAttribute('width' , width);
+    this.el.setAttribute('height', height);
+    this.text = document.createElement('a-entity');
+    this.el.appendChild(this.text);
+    this.text.setAttribute('scale', '0.2 0.2 0.2');
+    this.text.setAttribute('position', 
+                           (width / -2 + 0.01) + ' ' + 
+                           (height / -2 + 0.01) + ' 0.002');
+
+    if(this.data.type) label += ' (' + this.data.type + ')';
+    this.text.setAttribute('bmfont-text', 'text: ' + label + "; width: 400");
     // define home state for animations
     /*this.anim = document.createElement('a-animation');
     this.anim.setAttribute('attribute', 'position');

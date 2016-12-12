@@ -80,9 +80,7 @@ shinyUI(fluidPage(
                       `dynamic-body` = "",
                       sleepy = "",
                       `collision-filter` = "collidesWith: ;",
-                      #geometry = "primitive: box; height: .075; width: 0.33; depth: 0.33",
-                      material = "color: #FFF;",
-                      draw = "background: #A0A0A0"),
+                      material = "color: #FFF; side: double"),
           atags$mixin(id = "datacolumn-collided",
                       draw = "background: #A0F0F0")
         ),

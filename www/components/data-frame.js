@@ -4,7 +4,7 @@ AFRAME.registerComponent('data-frame', {
     data: { default: [] },
     columnClass: { default: 'grabbable' },
     columnMixin: { default: 'datacolumn' },
-    layout: { default: "type: box; margin: .1;" }
+    layout: { default: "type: box; margin: 0.15" }
   },
   
   dependencies: ["position"],
