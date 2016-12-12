@@ -16,6 +16,9 @@ hands to stretch or shrink it
 
 ### Latest Updates
 
+* Scales for plots: added `plot-axis-text` component. This will be automatically
+  added to a `plot` and label x, y, and z axes. Supports numeric labels and text
+  labels for factors.
 * Interactive plot building: plots can now be built within Adit by dragging
   data columns onto the axes.
     * `drag-drop` component for controllers. Tells targets when they are
