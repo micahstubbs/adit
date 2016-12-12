@@ -42,7 +42,8 @@ AFRAME.registerComponent('plot', {
           newLabels = dat.zlabels;
           break;
       }
-      ax.setAttribute('plot-axis', {breaks: newBreaks, labels: newLabels});
+      ax.setAttribute('plot-axis', 'breaks', newBreaks);
+      ax.setAttribute('plot-axis', 'labels', newLabels);
 
     }); 
   }
@@ -109,8 +110,8 @@ AFRAME.registerComponent('plot-axis', {
         pos2.y = -1 * pos.y;
         rot2.x = -1 * rot.x;
         rot2.z = rot.z;
-        posText.y = pos.y;
-        posText.z = compDat.size / 2 + 0.05;
+        posText.y = pos.y - 0.015;
+        posText.z = compDat.size / 2 + 0.015;
         rotText.x = -45;
         break;
       case 'y':
@@ -118,6 +119,9 @@ AFRAME.registerComponent('plot-axis', {
         pos2.z = -1 * pos.z;
         rot2.x = 180;
         rot2.z = 180;
+        posText.x = compDat.size / 2 + 0.005;
+        posText.z = compDat.size / 2 + 0.005;
+        rotText.y = -45;
         break;
       case 'z':
         pos.x = -1 * compDat.size / 2;
@@ -126,6 +130,9 @@ AFRAME.registerComponent('plot-axis', {
         pos2.x = -1 * pos.x;
         rot2.y = -1 * rot.y;
         rot2.z = -1 * rot.z;
+        posText.y = -1 * compDat.size / 2 - 0.015;
+        posText.x = -1 * compDat.size / 2 - 0.015;
+        rotText.z = -45;
     }
     
     makeAxis(this.axis, pos, rot);
@@ -133,7 +140,8 @@ AFRAME.registerComponent('plot-axis', {
     this.axisScale.setAttribute('plot-axis-text',{
       labels: compDat.labels, 
       breaks: compDat.breaks, 
-      fontScale: compDat.fontScale
+      fontScale: compDat.fontScale,
+      axis: this.data.axis
     });
     this.axisScale.setAttribute('position', posText);
     this.axisScale.setAttribute('rotation', rotText);
@@ -142,9 +150,7 @@ AFRAME.registerComponent('plot-axis', {
                                                 compDat.collider + 
                                                 ']');
     colliderEls.forEach(function (collEl) {
-      //if(coll.components[this.data.colliders].hasLoaded) {
         collEl.components[compDat.collider].update();
-      //}
     });
     
   },
@@ -157,7 +163,8 @@ AFRAME.registerComponent('plot-axis', {
       this.axisScale.setAttribute('plot-axis-text', {
         labels: this.data.labels,
         breaks: this.data.breaks,
-        fontScale: this.data.fontScale
+        fontScale: this.data.fontScale,
+        axis: this.data.axis
       });
     }
   },
@@ -254,7 +261,8 @@ AFRAME.registerComponent('plot-axis-text', {
   schema: {
     labels: { default: [] },
     breaks: { default: [] },
-    fontScale: { default: 1 }
+    fontScale: { default: 1 },
+    axis: { default: 'x'}
   },
   
   init: function() {
@@ -262,24 +270,27 @@ AFRAME.registerComponent('plot-axis-text', {
   },
   
   update: function() {
-    var diff = this.labelEls.length - this.data.labels.length,
-        schemaDat = this.data;
+    // if the two properties areupdated asyncrhonously
+    // and are different lengths, wait for the second
+    if(this.data.labels.length !== this.data.breaks.length) return;
+    
+    var diff = this.labelEls.length - this.data.labels.length;
     if(diff > 0) {
       this.labelEls.splice(this.data.labels.length).forEach(function (rem){
         rem.parentNode.removeChild(rem);
       });
     }
     this.labelEls.forEach(function(labEl, i) {
-      labEl.setAttribute('bmfont-text', 'text', schemaDat.labels[i]);
-      labEl.setAttribute('position', 'x', schemaDat.breaks[i]);
+      labEl.setAttribute('bmfont-text', 'text', this.data.labels[i]);
+      labEl.setAttribute('position', this.data.axis, this.data.breaks[i]);
       labEl.setAttribute('scale', 
-                         schemaDat.fontScale + ' ' + 
-                           schemaDat.fontScale + ' ' + 
-                           schemaDat.fontScale);
-    });
+                         this.data.fontScale + ' ' + 
+                           this.data.fontScale + ' ' + 
+                           this.data.fontScale);
+    }, this);
     if(diff < 0) {
-      this.addLabels(schemaDat.labels.slice(this.labelEls.length),
-                     schemaDat.breaks.slice(this.labelEls.length));
+      this.addLabels(this.data.labels.slice(this.labelEls.length),
+                     this.data.breaks.slice(this.labelEls.length));
     }
 
   },
@@ -292,11 +303,13 @@ AFRAME.registerComponent('plot-axis-text', {
       frag.appendChild(labEl);
       labEl.setAttribute('bmfont-text', {
         text: lab, width: 0, mode: 'nowrap',align: 'center'});
-      labEl.setAttribute('position', pos + ' 0 0');
+      labEl.setAttribute('position', '0 0 0');
+      labEl.setAttribute('position', this.data.axis, pos);
       labEl.setAttribute('scale', 
                          this.data.fontScale + ' ' +
                          this.data.fontScale + ' ' +
                          this.data.fontScale);
+      if(this.data.axis == 'z') labEl.setAttribute('rotation', '0 -90 0');
       this.labelEls.push(labEl);
     }, this);
     this.el.appendChild(frag);
@@ -304,7 +317,8 @@ AFRAME.registerComponent('plot-axis-text', {
   // compensate for width of string(approximate)
   offsetBreak: function(lab){
     // at default scale, characters are ~0.1m wide
-    return lab.length * -0.1 * this.data.fontScale;
+    var numChar = this.data.axis == 'y' ? 1 : lab.length;
+    return numChar * -0.075 * this.data.fontScale;
   }
   
 });
