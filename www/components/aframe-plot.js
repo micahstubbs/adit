@@ -228,6 +228,7 @@ AFRAME.registerComponent("plot-area", {
   update: function () {
     var el = this.el;
     var dat = this.data; 
+    var frag = document.createDocumentFragment();
     while(el.lastChild) {
       el.removeChild(el.lastChild);
     }
@@ -237,7 +238,7 @@ AFRAME.registerComponent("plot-area", {
       mark.setAttribute("position", {x: x, y: y, z: z});
       mark.setAttribute("geometry", geom);
       mark.setAttribute("material", mat);
-      el.appendChild(mark);
+      frag.appendChild(mark);
     };
 
     for(i = 0; i < dat.x.length; i++) {
@@ -245,6 +246,7 @@ AFRAME.registerComponent("plot-area", {
         dat.x[i], dat.y[i], dat.z[i], dat.geometry[i], dat.material[i]
       );
     }
+    el.appendChild(frag);
     // pass scale info up
     el.parentEl.setAttribute('plot', {
       xlabels: dat.xlabels,
