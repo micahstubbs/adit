@@ -42,7 +42,6 @@ AFRAME.registerComponent('plot', {
           newLabels = dat.zlabels;
           break;
       }
-      console.log('send axis update', newBreaks, newLabels);
       ax.setAttribute('plot-axis', {breaks: newBreaks, labels: newLabels});
 
     }); 
@@ -152,14 +151,9 @@ AFRAME.registerComponent('plot-axis', {
   
 
   update: function(oldData) {
-    console.log('axis text update called');
     if(oldData.breaks !== this.data.breaks ||
         oldData.labels !== this.data.labels ||
         oldData.title !== this.data.title) {
-      console.log('axis text updated', this.data.labels);
-          //this.axisScale.setAttribute('bmfont-text', {
-          //  text: this.data.labels.join(' ') + '\n' + this.data.title
-          //});
       this.axisScale.setAttribute('plot-axis-text', {
         labels: this.data.labels,
         breaks: this.data.breaks,
@@ -264,7 +258,6 @@ AFRAME.registerComponent('plot-axis-text', {
   },
   
   init: function() {
-    console.log('plot axis text init');
     this.labelEls = [];
   },
   
