@@ -292,23 +292,20 @@ AFRAME.registerComponent('plot-axis-text', {
   },
   
   addLabels: function(newLabels, newPositions) {
-    var frag = document.createDocumentFragment(),
-        schemaDat = this.data,
-        labelEls = this.labelEls,
-        self = this;
+    var frag = document.createDocumentFragment();
     newLabels.forEach(function(lab, i) {
       var labEl = document.createElement('a-entity'),
-          pos = newPositions[i] + self.offsetBreak(lab);
+          pos = newPositions[i] + this.offsetBreak(lab);
       frag.appendChild(labEl);
       labEl.setAttribute('bmfont-text', {
         text: lab, width: 0, mode: 'nowrap',align: 'center'});
       labEl.setAttribute('position', pos + ' 0 0');
       labEl.setAttribute('scale', 
-                         schemaDat.fontScale + ' ' +
-                         schemaDat.fontScale + ' ' +
-                         schemaDat.fontScale);
-      labelEls.push(labEl);
-    });
+                         this.data.fontScale + ' ' +
+                         this.data.fontScale + ' ' +
+                         this.data.fontScale);
+      this.labelEls.push(labEl);
+    }, this);
     this.el.appendChild(frag);
   },
   // compensate for width of string(approximate)
