@@ -208,11 +208,7 @@ AFRAME.registerComponent('plot-axis', {
 
 AFRAME.registerComponent("plot-area", {
   schema: { 
-    x: { default: [] },
-    y: { default: [] },
-    z: { default: [] },
-    geometry: { default: [] },
-    material: { default: [] },
+    points: { default: [] },
     xlabels: { default: [] },
     xbreaks: { default: [] },
     ylabels: { default: [] },
@@ -222,17 +218,45 @@ AFRAME.registerComponent("plot-area", {
   },
   
   init: function () {
-    
+    this.queuePos = null;
+  },
+  
+  tick: function() {
+    // pending point updates
+    if(this.queuePos !== null) {
+      //////////////debugging
+      var startqp = this.queuePos;
+      ///////////////
+      //init time
+      var startTime = performance.now();
+      var frag = document.createDocumentFragment();
+      while(performance.now() - startTime < 1 && 
+             this.queuePos < this.data.points.length) {
+           let p = document.createElement('a-entity');
+           let pdat =this.data.points[this.queuePos++];
+           frag.appendChild(p);
+           p.setAttribute('position', [pdat.x, pdat.y, pdat.z].join(' '));
+           p.setAttribute('geometry', pdat.geometry);
+           p.setAttribute('material', pdat.material);
+      }
+      this.el.appendChild(frag);
+      //////////////debugging
+      console.log(this.queuePos - startqp, "points updated");
+      /////////////
+      if(this.queuePos === this.data.points.length) this.queuePos = null;
+    }
   },
   
   update: function () {
     var el = this.el;
     var dat = this.data; 
-    var frag = document.createDocumentFragment();
+    //var frag = document.createDocumentFragment();
+    ///////////// TODO change to el.getChildEntities
     while(el.lastChild) {
       el.removeChild(el.lastChild);
     }
-    registerMark = function(x, y, z, geom, mat) {
+    this.queuePos = 0;
+    /*registerMark = function(x, y, z, geom, mat) {
       var mark;
       mark = document.createElement("a-entity");
       mark.setAttribute("position", {x: x, y: y, z: z});
@@ -246,9 +270,11 @@ AFRAME.registerComponent("plot-area", {
         dat.x[i], dat.y[i], dat.z[i], dat.geometry[i], dat.material[i]
       );
     }
-    el.appendChild(frag);
+    el.appendChild(frag);*/
     // pass scale info up
-    el.parentEl.setAttribute('plot', {
+    /////////////////////////TODO//////////////////////
+    // update single attributes instead of block to avoid overwritting other settings
+    this.el.parentEl.setAttribute('plot', {
       xlabels: dat.xlabels,
       xbreaks: dat.xbreaks,
       ylabels: dat.ylabels,
@@ -256,6 +282,7 @@ AFRAME.registerComponent("plot-area", {
       zlabels: dat.zlabels,
       zbreaks: dat.zbreaks
     });
+    ////////////////////////ENDTODO/////////////////////
   }
 });
 
