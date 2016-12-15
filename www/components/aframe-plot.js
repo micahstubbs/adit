@@ -220,6 +220,7 @@ AFRAME.registerComponent("plot-area", {
   init: function () {
     this.queuePos = null;
     this.pointEls = [];
+    this.updateCompleteBound = this.updateComplete.bind(this);
   },
   
   updateCallback: function() {
@@ -243,14 +244,11 @@ AFRAME.registerComponent("plot-area", {
         }
         p.setAttribute('geometry', pdat.geometry);
         p.setAttribute('material', pdat.material);
-        //p.setAttribute('position', [pdat.x, pdat.y, pdat.z].join(' '));
-        an = document.createElement('a-animation');
-        an.setAttribute('attribute', 'position');
-        an.setAttribute('to', [pdat.x, pdat.y, pdat.z].join(' '));
-          
-        //an.setAttribute('begin', 'plotUpdateComplete');
-        p.appendChild(an);
-
+        p.setAttribute('animation', 
+                       'property: position; ' + 
+                         'startEvents: plotUpdateComplete; ' + 
+                         'to: ' + [pdat.x, pdat.y, pdat.z].join(' ')
+                      );
         this.queuePos++;
       }
       setTimeout(this.updateCallback.bind(this));
@@ -258,6 +256,25 @@ AFRAME.registerComponent("plot-area", {
       this.el.emit("plotUpdateComplete");
       console.log("total time", performance.now() - this.perfTime, "total length", this.pointEls.length);
     }
+  },
+  
+  animateCallback: function() {
+    if(this.animQueuePos < this.pointEls.length) {
+      this.pointEls[this.animQueuePos++]
+        .emit('plotUpdateComplete', {}, false);
+      setTimeout(this.animateCallback.bind(this));
+    }
+  },
+  
+  play: function() {
+    this.el.addEventListener('plotUpdateComplete', this.updateCompleteBound);
+  },
+  pause: function() {
+    this.el.removeEventListener('plotUpdateComplete', this.updateCompleteBound);
+  },
+  updateComplete: function() {
+    this.animQueuePos = 0; 
+    setTimeout(this.animateCallback.bind(this));
   },
   
   update: function () {
