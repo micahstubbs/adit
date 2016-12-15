@@ -223,7 +223,7 @@ AFRAME.registerComponent("plot-area", {
   },
   
   updateCallback: function() {
-    var pdat, p, 
+    var pdat, p, an,
         dataLen = this.data.points.length;
     if (this.queuePos < dataLen) {
       // remove any extra entities first
@@ -236,17 +236,28 @@ AFRAME.registerComponent("plot-area", {
         if(this.queuePos >= this.pointEls.length) {
           p = document.createElement('a-entity');
           this.el.appendChild(p);
+          p.setAttribute('position', '0 0 0');
           this.pointEls.push(p);
         } else {
           p = this.pointEls[this.queuePos];
         }
-        p.setAttribute('position', [pdat.x, pdat.y, pdat.z].join(' '));
         p.setAttribute('geometry', pdat.geometry);
         p.setAttribute('material', pdat.material);
+        //p.setAttribute('position', [pdat.x, pdat.y, pdat.z].join(' '));
+        an = document.createElement('a-animation');
+        an.setAttribute('attribute', 'position');
+        an.setAttribute('to', [pdat.x, pdat.y, pdat.z].join(' '));
+          
+        //an.setAttribute('begin', 'plotUpdateComplete');
+        p.appendChild(an);
+
         this.queuePos++;
       }
       setTimeout(this.updateCallback.bind(this));
-    } else {console.log("total time", performance.now() - this.perfTime, "total length", this.pointEls.length);}
+    } else {
+      this.el.emit("plotUpdateComplete");
+      console.log("total time", performance.now() - this.perfTime, "total length", this.pointEls.length);
+    }
   },
   
   update: function () {
