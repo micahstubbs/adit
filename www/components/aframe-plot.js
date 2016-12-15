@@ -322,12 +322,7 @@ AFRAME.registerComponent('plot-axis-text', {
       });
     }
     this.labelEls.forEach(function(labEl, i) {
-      labEl.setAttribute('bmfont-text', 'text', this.data.labels[i]);
-      labEl.setAttribute('position', this.data.axis, this.data.breaks[i]);
-      labEl.setAttribute('scale', 
-                         this.data.fontScale + ' ' + 
-                           this.data.fontScale + ' ' + 
-                           this.data.fontScale);
+      this.setLabel(labEl, this.data.labels[i], this.data.breaks[i]);
     }, this);
     if(diff < 0) {
       this.addLabels(this.data.labels.slice(this.labelEls.length),
@@ -339,27 +334,26 @@ AFRAME.registerComponent('plot-axis-text', {
   addLabels: function(newLabels, newPositions) {
     var frag = document.createDocumentFragment();
     newLabels.forEach(function(lab, i) {
-      var labEl = document.createElement('a-entity'),
-          pos = newPositions[i] + this.offsetBreak(lab);
+      var labEl = document.createElement('a-entity');
       frag.appendChild(labEl);
       labEl.setAttribute('bmfont-text', {
-        text: lab, width: 0, mode: 'nowrap',align: 'center'});
+        width: 0, mode: 'nowrap',align: 'center'});
       labEl.setAttribute('position', '0 0 0');
-      labEl.setAttribute('position', this.data.axis, pos);
-      labEl.setAttribute('scale', 
-                         this.data.fontScale + ' ' +
-                         this.data.fontScale + ' ' +
-                         this.data.fontScale);
+      this.setLabel(labEl, lab, newPositions[i]);
       if(this.data.axis == 'z') labEl.setAttribute('rotation', '0 -90 0');
       this.labelEls.push(labEl);
     }, this);
     this.el.appendChild(frag);
   },
-  // compensate for width of string(approximate)
-  offsetBreak: function(lab){
-    // at default scale, characters are ~0.1m wide
-    var numChar = this.data.axis == 'y' ? 1 : lab.length;
-    return numChar * -0.075 * this.data.fontScale;
+
+  setLabel: function(labEl, lab, pos) {
+    // compensate for width of string(approximate)
+    var numChar = this.data.axis === 'y' ? 1 : lab.length;
+    pos -= numChar * 0.05 * this.data.fontScale;
+    labEl.setAttribute('bmfont-text', 'text', lab);
+    labEl.setAttribute('position', this.data.axis, pos);
+    labEl.setAttribute('scale', 
+                       new Array(4).join(this.data.fontScale + ' '));
   }
   
 });
