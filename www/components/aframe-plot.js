@@ -219,58 +219,38 @@ AFRAME.registerComponent("plot-area", {
   
   init: function () {
     this.queuePos = null;
+    this.pointEls = [];
   },
   
-  tick: function() {
-    // pending point updates
-    if(this.queuePos !== null) {
-      //////////////debugging
-      var startqp = this.queuePos;
-      ///////////////
-      //init time
-      var startTime = performance.now();
-      var frag = document.createDocumentFragment();
-      while(performance.now() - startTime < 1 && 
-             this.queuePos < this.data.points.length) {
-           let p = document.createElement('a-entity');
-           let pdat =this.data.points[this.queuePos++];
-           frag.appendChild(p);
-           p.setAttribute('position', [pdat.x, pdat.y, pdat.z].join(' '));
-           p.setAttribute('geometry', pdat.geometry);
-           p.setAttribute('material', pdat.material);
+  updateCallback: function() {
+    if (this.queuePos < this.data.points.length) {
+      let pdat = this.data.points[this.queuePos],
+          p;
+      if(this.queuePos >= this.pointEls.length) {
+        p = document.createElement('a-entity');
+        this.el.appendChild(p);
+        this.pointEls.push(p);
+      } else {
+        p = this.pointEls[this.queuePos];
       }
-      this.el.appendChild(frag);
-      //////////////debugging
-      console.log(this.queuePos - startqp, "points updated");
-      /////////////
-      if(this.queuePos === this.data.points.length) this.queuePos = null;
-    }
+      p.setAttribute('position', [pdat.x, pdat.y, pdat.z].join(' '));
+      p.setAttribute('geometry', pdat.geometry);
+      p.setAttribute('material', pdat.material);
+      this.queuePos++;
+      setTimeout(this.updateCallback.bind(this));
+    } else if (this.queuePos < this.pointEls.length) {
+      this.el.removeChild(this.pointEls[this.queuePos]);
+      this.pointEls.splice(this.queuePos, 1);
+      setTimeout(this.updateCallback.bind(this));
+    } else {console.log("total time", performance.now() - this.perfTime, "total length", this.pointEls.length);}
   },
   
   update: function () {
     var el = this.el;
     var dat = this.data; 
-    //var frag = document.createDocumentFragment();
-    ///////////// TODO change to el.getChildEntities
-    while(el.lastChild) {
-      el.removeChild(el.lastChild);
-    }
     this.queuePos = 0;
-    /*registerMark = function(x, y, z, geom, mat) {
-      var mark;
-      mark = document.createElement("a-entity");
-      mark.setAttribute("position", {x: x, y: y, z: z});
-      mark.setAttribute("geometry", geom);
-      mark.setAttribute("material", mat);
-      frag.appendChild(mark);
-    };
-
-    for(i = 0; i < dat.x.length; i++) {
-      registerMark(
-        dat.x[i], dat.y[i], dat.z[i], dat.geometry[i], dat.material[i]
-      );
-    }
-    el.appendChild(frag);*/
+    this.perfTime = performance.now();
+    setTimeout(this.updateCallback.bind(this));
     // pass scale info up
     /////////////////////////TODO//////////////////////
     // update single attributes instead of block to avoid overwritting other settings
