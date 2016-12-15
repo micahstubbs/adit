@@ -223,24 +223,28 @@ AFRAME.registerComponent("plot-area", {
   },
   
   updateCallback: function() {
-    if (this.queuePos < this.data.points.length) {
-      let pdat = this.data.points[this.queuePos],
-          p;
-      if(this.queuePos >= this.pointEls.length) {
-        p = document.createElement('a-entity');
-        this.el.appendChild(p);
-        this.pointEls.push(p);
+    var pdat, p, 
+        dataLen = this.data.points.length;
+    if (this.queuePos < dataLen) {
+      // remove any extra entities first
+      if (this.pointEls.length > dataLen) {
+        this.el.removeChild(this.pointEls[dataLen]);
+        this.pointEls.splice(dataLen, 1);
       } else {
-        p = this.pointEls[this.queuePos];
+        pdat = this.data.points[this.queuePos];
+        //create new entities as needed
+        if(this.queuePos >= this.pointEls.length) {
+          p = document.createElement('a-entity');
+          this.el.appendChild(p);
+          this.pointEls.push(p);
+        } else {
+          p = this.pointEls[this.queuePos];
+        }
+        p.setAttribute('position', [pdat.x, pdat.y, pdat.z].join(' '));
+        p.setAttribute('geometry', pdat.geometry);
+        p.setAttribute('material', pdat.material);
+        this.queuePos++;
       }
-      p.setAttribute('position', [pdat.x, pdat.y, pdat.z].join(' '));
-      p.setAttribute('geometry', pdat.geometry);
-      p.setAttribute('material', pdat.material);
-      this.queuePos++;
-      setTimeout(this.updateCallback.bind(this));
-    } else if (this.queuePos < this.pointEls.length) {
-      this.el.removeChild(this.pointEls[this.queuePos]);
-      this.pointEls.splice(this.queuePos, 1);
       setTimeout(this.updateCallback.bind(this));
     } else {console.log("total time", performance.now() - this.perfTime, "total length", this.pointEls.length);}
   },
