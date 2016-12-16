@@ -72,7 +72,7 @@ shinyUI(fluidPage(
           aframeMixin(id = "plottheme-grabbed",
                       material = "color: #F2E646;"),
           aframeMixin(id = "controller",
-                      `static-body`="shape: sphere; sphereRadius: 0.02;",
+                      `dynamic-body`="shape: sphere; sphereRadius: 0.02;",
                       #`sphere-collider`="objects: .grabbable, .hoverable, .draggable;",
                       `physics-collider` = "",
                       #`collision-filter` = "group: default; collidesWith: default;",
@@ -109,8 +109,8 @@ shinyUI(fluidPage(
           #material = "transparent: true; opacity: 0;",
           `dynamic-body` = "shape: box;",
           class = "grabbable",
-          sleepy = "angularDamping: 0; speedLimit: 1",
-          `collision-filter` = "group: plots; collidesWith: plots, default;" #,
+          sleepy = "angularDamping: 0; speedLimit: 1" #,
+          #`collision-filter` = "group: plots; collidesWith: plots, default;" ,
           #aScatter3dOutput("myplot")
         ),
         aframeBox(
@@ -118,7 +118,7 @@ shinyUI(fluidPage(
           width = "0.25", height = "0.25", depth = "0.25",
           `dynamic-body` = "",
           #`collision-filter` = "group: default; collidesWith: default;",
-          #sleepy = "",
+          sleepy = "",
           class = "grabbable",
           id = "testbox",
           mixin = "testbox"

@@ -5,6 +5,8 @@ AFRAME.registerComponent("physics-collider", {
   init: function() {
     this.el.addEventListener("body-loaded", (evt) => {
       evt.detail.target.body.collisionResponse = false; 
+      evt.detail.target.body.allowSleep = false;
+      evt.detail.target.components['dynamic-body'].step = function() {};
     });
     this.collisions = [];
   },
