@@ -17,7 +17,7 @@ shinyUI(fluidPage(
   
   # AFRAME scripts
   tags$head(
-    #tags$script(src = "aframe.js"),
+    tags$script(src = "aframe.js"),
     tags$script(src = "cannon.js"),
     tags$script(src = "components/ground.js"),
     tags$script(src = "shaders/skyGradient.js"),
@@ -34,9 +34,8 @@ shinyUI(fluidPage(
     tags$script(src = "components/aframe-physics-collision-filter.js"),
     tags$script(src = "components/aframe-stretch.js"),
     tags$script(src = "components/aframe-plot.js"),
-    tags$script(src = "components/aframe-drag-drop.js")
-   
-
+    tags$script(src = "components/aframe-drag-drop.js"),
+    tags$script(src = "components/aframe-physics-collider.js")
   ),
   # Application title
   titlePanel("VR Data Explorer"),
@@ -61,7 +60,7 @@ shinyUI(fluidPage(
     
     mainPanel(
       aframeScene(
-        physics = "gravity: 0",
+        physics = "gravity: 0; debug: true",
         fog = "color: #bc483e; near: 0; far: 65;",
         aframeAssets(
           tags$img(id = "arrow", src = "textures/arrow.png"),
@@ -74,7 +73,9 @@ shinyUI(fluidPage(
                       material = "color: #F2E646;"),
           aframeMixin(id = "controller",
                       `static-body`="shape: sphere; sphereRadius: 0.02;",
-                      `sphere-collider`="objects: .grabbable, .hoverable, .draggable;",
+                      #`sphere-collider`="objects: .grabbable, .hoverable, .draggable;",
+                      `physics-collider` = "",
+                      #`collision-filter` = "group: default; collidesWith: default;",
                       grab = "", stretch = "", `drag-drop` = ""),
           atags$mixin(id = "datacolumn",
                       `dynamic-body` = "",
@@ -82,7 +83,11 @@ shinyUI(fluidPage(
                       `collision-filter` = "collidesWith: ;",
                       material = "color: #FFF; side: double"),
           atags$mixin(id = "datacolumn-collided",
-                      material = "color: #F2E646;")
+                      material = "color: #F2E646;"),
+          atags$mixin(id = "testbox", 
+                      material = "color: blue"),
+          atags$mixin(id = "testbox-collided",
+                      material = "color: green")
         ),
         # Hand conttols
         aframeEntity(
@@ -105,18 +110,18 @@ shinyUI(fluidPage(
           `dynamic-body` = "shape: box;",
           class = "grabbable",
           sleepy = "angularDamping: 0; speedLimit: 1",
-          `collision-filter` = "group: plots; collidesWith: plots, default;",
-          aScatter3dOutput("myplot")
+          `collision-filter` = "group: plots; collidesWith: plots, default;" #,
+          #aScatter3dOutput("myplot")
         ),
         aframeBox(
           position = "-1 1.5 -0.5",
           width = "0.25", height = "0.25", depth = "0.25",
-          material = "color: blue",
           `dynamic-body` = "",
-          `collision-filter` = "group: notplots; collidesWith: notplots, default;",
-          sleepy = "",
+          #`collision-filter` = "group: default; collidesWith: default;",
+          #sleepy = "",
           class = "grabbable",
-          id = "testbox"
+          id = "testbox",
+          mixin = "testbox"
         ),
         # aframeBox(
         #   position = "-1 1.5 0.5",
@@ -130,7 +135,7 @@ shinyUI(fluidPage(
         # ),
         aframeEntity(
           position = ".6 1 -0.5",
-          aDataFrameOutput("mydat"),
+          #aDataFrameOutput("mydat"),
           id = "datacontainer"
         ),
         aframeEntity(id = "sky", geometry = "primitive: sphere; radius: 65;",
@@ -146,6 +151,7 @@ shinyUI(fluidPage(
         aframeEntity(geometry = "primitive: plane; height: 20; width: 20",
                      material = "color: white;",
                      `static-body` = "",
+                     `collision-filter` = "collidesWith: default, notplots, plots",
                      rotation = "-90 0 0", position = "0 -0.05 0",
                      id = "floorcollider")
 
