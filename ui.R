@@ -72,7 +72,7 @@ shinyUI(fluidPage(
           aframeMixin(id = "plottheme-grabbed",
                       material = "color: #F2E646;"),
           aframeMixin(id = "controller",
-                      `dynamic-body`="shape: sphere; sphereRadius: 0.02;",
+                      `static-body`="shape: sphere; sphereRadius: 0.02;",
                       #`sphere-collider`="objects: .grabbable, .hoverable, .draggable;",
                       `physics-collider` = "",
                       #`collision-filter` = "group: default; collidesWith: default;",

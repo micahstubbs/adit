@@ -5,16 +5,8 @@ AFRAME.registerComponent("physics-collider", {
   init: function() {
     this.el.addEventListener("body-loaded", (evt) => {
       evt.detail.target.body.collisionResponse = false; 
-      evt.detail.target.body.allowSleep = false;
-      evt.detail.target.components['dynamic-body'].step = function() {};
     });
     this.collisions = [];
-  },
-  play: function() {
-    
-    /*this.el.addEventListener('collide', (evt) => {
-      console.log(evt);
-    });*/
   },
   tick: function() {
     var collisions = [],
@@ -32,7 +24,7 @@ AFRAME.registerComponent("physics-collider", {
       }
     });
     if (collisions.length === 0) { el.emit('hit', {el: null}); }
-    // Updated the state of the elements that are not intersected anymore.
+    // Update the state of the elements that are not intersected anymore.
     this.collisions.filter(function (el) {
       return collisions.indexOf(el) === -1;
     }).forEach(function removeState (el) {

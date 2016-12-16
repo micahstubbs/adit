@@ -20,8 +20,7 @@ AFRAME.registerComponent('sleepy', {
   },
   
   initBody: function () {
-    this.el.sceneEl.systems.physics.world.allowSleep = true;
-    //this.el.body.world.allowSleep = true;
+    //this.el.sceneEl.systems.physics.world.allowSleep = true;
     this.update();
     this.play();
     this.resumeState({detail: {state: this.data.holdState}});

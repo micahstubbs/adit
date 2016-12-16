@@ -59345,7 +59345,6 @@ module.exports.Component = registerComponent('tracked-controls', {
         y: controllerPosition.y,
         z: controllerPosition.z
       });
-      if (el.components['dynamic-body']) el.components['dynamic-body'].syncToPhysics();
     };
   })(),
 
