@@ -1,12 +1,12 @@
 AFRAME.registerComponent('plot', {
   schema: { 
     size: { default: 0.5 },
-    xbreaks: { default: '' },
-    xlabels: { default: '' },
-    ybreaks: { default: '' },
-    ylabels: { default: '' },
-    zbreaks: { default: '' },
-    zlabels: { default: '' }
+    xbreaks: { default: [] },
+    xlabels: { default: [] },
+    ybreaks: { default: [] },
+    ylabels: { default: [] },
+    zbreaks: { default: [] },
+    zlabels: { default: [] }
   },
   dependencies: ['geometry'],
   init: function() {
@@ -218,9 +218,9 @@ AFRAME.registerComponent("plot-area", {
   },
   
   init: function () {
+    this.POINT_UPDATED = 'pointUpdated';
     this.queuePos = null;
     this.pointEls = [];
-    this.updateCompleteBound = this.updateComplete.bind(this);
   },
   
   updateCallback: function() {
@@ -246,42 +246,27 @@ AFRAME.registerComponent("plot-area", {
         p.setAttribute('material', pdat.material);
         p.setAttribute('animation', 
                        'property: position; ' + 
-                         'startEvents: plotUpdateComplete; ' + 
-                         'to: ' + [pdat.x, pdat.y, pdat.z].join(' ')
+                         'startEvents: '+ this.POINT_UPDATED + 
+                         '; to: ' + [pdat.x, pdat.y, pdat.z].join(' ')
                       );
+        if(p.hasLoaded) {
+          p.emit(this.POINT_UPDATED, {}, false);
+        } else {
+          p.addEventListener('loaded', (evt) => {
+            evt.detail.target.emit(this.POINT_UPDATED, {}, false);
+          });
+        }
         this.queuePos++;
       }
       setTimeout(this.updateCallback.bind(this));
     } else {
       this.el.emit("plotUpdateComplete");
-      console.log("total time", performance.now() - this.perfTime, "total length", this.pointEls.length);
     }
   },
-  
-  animateCallback: function() {
-    if(this.animQueuePos < this.pointEls.length) {
-      this.pointEls[this.animQueuePos++]
-        .emit('plotUpdateComplete', {}, false);
-      setTimeout(this.animateCallback.bind(this));
-    }
-  },
-  
-  play: function() {
-    this.el.addEventListener('plotUpdateComplete', this.updateCompleteBound);
-  },
-  pause: function() {
-    this.el.removeEventListener('plotUpdateComplete', this.updateCompleteBound);
-  },
-  updateComplete: function() {
-    this.animQueuePos = 0; 
-    setTimeout(this.animateCallback.bind(this));
-  },
-  
   update: function () {
     var el = this.el;
     var dat = this.data; 
     this.queuePos = 0;
-    this.perfTime = performance.now();
     setTimeout(this.updateCallback.bind(this));
     // pass scale info up
     /////////////////////////TODO//////////////////////
