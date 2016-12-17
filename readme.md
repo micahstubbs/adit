@@ -16,6 +16,14 @@ hands to stretch or shrink it
 
 ### Latest Updates
 
+* Performance improvements
+    * Plot updates are queued and completed as time is available to avoid 
+      locking out the render thread
+    * Plot points are updated rather than destroyed and recreated (and the 
+      updates are not accomplished with an animation)
+    * New `physics-collider` component is drop-in replacement for 
+      `sphere-collider` that uses the `physics` engine's existing 
+      collision detection instead of calculating its own collisions
 * Scales for plots: added `plot-axis-text` component. This will be automatically
   added to a `plot` and label x, y, and z axes. Supports numeric labels and text
   labels for factors.
