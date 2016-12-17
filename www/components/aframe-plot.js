@@ -61,8 +61,7 @@ AFRAME.registerComponent('plot-axis', {
     material: { default: 'src: #arrow' },
     size: { default: 1 },
     hoverState: { default: 'hovered' },
-    hoverClass: { default: 'hoverable' },
-    collider: { default: 'sphere-collider' }
+    hoverClass: { default: 'hoverable' } 
   },
   //dependencies: ['material'],
   
@@ -99,6 +98,8 @@ AFRAME.registerComponent('plot-axis', {
       el.setAttribute('material', 'visible', false);
       el.setAttribute('position', pos);
       el.setAttribute('rotation', rot);
+      el.setAttribute('static-body', '');
+      el.setAttribute('collision-filter', 'group: plotaxis');
       return el;
     };
     
@@ -145,14 +146,6 @@ AFRAME.registerComponent('plot-axis', {
     });
     this.axisScale.setAttribute('position', posText);
     this.axisScale.setAttribute('rotation', rotText);
-
-    var colliderEls = document.querySelectorAll('a-entity[' + 
-                                                compDat.collider + 
-                                                ']');
-    colliderEls.forEach(function (collEl) {
-        collEl.components[compDat.collider].update();
-    });
-    
   },
   
 

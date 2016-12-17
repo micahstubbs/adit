@@ -17,7 +17,7 @@ shinyUI(fluidPage(
   
   # AFRAME scripts
   tags$head(
-    tags$script(src = "aframe.js"),
+    #tags$script(src = "aframe.js"),
     tags$script(src = "cannon.js"),
     tags$script(src = "components/ground.js"),
     tags$script(src = "shaders/skyGradient.js"),
@@ -60,7 +60,7 @@ shinyUI(fluidPage(
     
     mainPanel(
       aframeScene(
-        physics = "gravity: 0; debug: true",
+        physics = "gravity: 0;",
         fog = "color: #bc483e; near: 0; far: 65;",
         aframeAssets(
           tags$img(id = "arrow", src = "textures/arrow.png"),
@@ -76,7 +76,8 @@ shinyUI(fluidPage(
             id = "controller",
             `static-body`="shape: sphere; sphereRadius: 0.02;",
             `physics-collider` = "",
-            `collision-filter` = "collidesWith: default, plots, datacolumn, notplots;",
+            `collision-filter` = paste("collidesWith: default, plots,",
+                                       "datacolumn, plotaxis, notplots;"),
             grab = "", stretch = "", `drag-drop` = ""
           ),
           atags$mixin(id = "datacolumn", `dynamic-body` = "", sleepy = "",
@@ -104,8 +105,8 @@ shinyUI(fluidPage(
           plot = "size: 0.5",
           `dynamic-body` = "shape: box;",
           sleepy = "angularDamping: 0; speedLimit: 1",
-          `collision-filter` = "group: plots;" #,
-          #aScatter3dOutput("myplot")
+          `collision-filter` = "group: plots;",
+          aScatter3dOutput("myplot")
         ),
         aframeBox(
           position = "-1 1.5 -0.5",
