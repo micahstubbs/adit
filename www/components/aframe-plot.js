@@ -1,12 +1,15 @@
 AFRAME.registerComponent('plot', {
   schema: { 
     size: { default: 0.5 },
-    xbreaks: { default: [] },
+    xname: {default: ''},
     xlabels: { default: [] },
-    ybreaks: { default: [] },
+    xbreaks: { default: [] },
+    yname: {default: ''},
     ylabels: { default: [] },
-    zbreaks: { default: [] },
-    zlabels: { default: [] }
+    ybreaks: { default: [] },
+    zname: {default: ''},
+    zlabels: { default: [] },
+    zbreaks: { default: [] } 
   },
   dependencies: ['geometry'],
   init: function() {
@@ -27,21 +30,25 @@ AFRAME.registerComponent('plot', {
     var dat = this.data;
     this.axes.forEach(function(ax) {
       if(!ax.components['plot-axis'].data) return;
-      var newBreaks, newLabels;
+      var newBreaks, newLabels, newName;
       switch(ax.components['plot-axis'].data.axis) {
         case 'x':
+          newName = dat.xname;
           newBreaks = dat.xbreaks;
           newLabels = dat.xlabels;
           break;
         case 'y':
+          newName = dat.yname;
           newBreaks = dat.ybreaks;
           newLabels = dat.ylabels;
           break;
         case 'z':
+          newName = dat.zname;
           newBreaks = dat.zbreaks;
           newLabels = dat.zlabels;
           break;
       }
+      ax.setAttribute('plot-axis', 'name', newName);
       ax.setAttribute('plot-axis', 'breaks', newBreaks);
       ax.setAttribute('plot-axis', 'labels', newLabels);
 
@@ -54,9 +61,9 @@ AFRAME.registerComponent('plot-axis', {
   // Define component properties.
   schema: {
     axis: { default: 'x' },
+    name: { default: '' },
     breaks: { default: [] },
     labels: { default: [] },
-    title: { default: '' },
     fontScale: { default: 0.15 },
     material: { default: 'src: #arrow' },
     size: { default: 1 },
@@ -139,6 +146,7 @@ AFRAME.registerComponent('plot-axis', {
     makeAxis(this.axis, pos, rot);
     makeAxis(this.mirror, pos2, rot2);
     this.axisScale.setAttribute('plot-axis-text',{
+      name: compDat.name,
       labels: compDat.labels, 
       breaks: compDat.breaks, 
       fontScale: compDat.fontScale,
@@ -152,8 +160,10 @@ AFRAME.registerComponent('plot-axis', {
   update: function(oldData) {
     if(oldData.breaks !== this.data.breaks ||
         oldData.labels !== this.data.labels ||
-        oldData.title !== this.data.title) {
+        oldData.name !== this.data.name ||
+        oldData.fontScale !== this.data.fontScale) {
       this.axisScale.setAttribute('plot-axis-text', {
+        name: this.data.name,
         labels: this.data.labels,
         breaks: this.data.breaks,
         fontScale: this.data.fontScale,
@@ -202,10 +212,13 @@ AFRAME.registerComponent('plot-axis', {
 AFRAME.registerComponent("plot-area", {
   schema: { 
     points: { default: [] },
+    xname: {default: ''},
     xlabels: { default: [] },
     xbreaks: { default: [] },
+    yname: {default: ''},
     ylabels: { default: [] },
     ybreaks: { default: [] },
+    zname: {default: ''},
     zlabels: { default: [] },
     zbreaks: { default: [] }    
   },
@@ -257,27 +270,28 @@ AFRAME.registerComponent("plot-area", {
     }
   },
   update: function () {
-    var el = this.el;
-    var dat = this.data; 
+    var parent = this.el.parentEl,
+        dat = this.data,
+        // pass scale info up without overwriting other settings
+        plotDat = AFRAME.utils.extend(parent.getComputedAttribute('plot'),
+                                      { xname: dat.xname,
+                                        xlabels: dat.xlabels,
+                                        xbreaks: dat.xbreaks,
+                                        yname: dat.yname,
+                                        ylabels: dat.ylabels,
+                                        ybreaks: dat.ybreaks,
+                                        zname: dat.zname,
+                                        zlabels: dat.zlabels,
+                                        zbreaks: dat.zbreaks });
     this.queuePos = 0;
     setTimeout(this.updateCallback.bind(this));
-    // pass scale info up
-    /////////////////////////TODO//////////////////////
-    // update single attributes instead of block to avoid overwritting other settings
-    this.el.parentEl.setAttribute('plot', {
-      xlabels: dat.xlabels,
-      xbreaks: dat.xbreaks,
-      ylabels: dat.ylabels,
-      ybreaks: dat.ybreaks,
-      zlabels: dat.zlabels,
-      zbreaks: dat.zbreaks
-    });
-    ////////////////////////ENDTODO/////////////////////
+    parent.setAttribute('plot', plotDat);
   }
 });
 
 AFRAME.registerComponent('plot-axis-text', {
   schema: {
+    name: { default: '' },
     labels: { default: [] },
     breaks: { default: [] },
     fontScale: { default: 1 },
@@ -286,9 +300,32 @@ AFRAME.registerComponent('plot-axis-text', {
   
   init: function() {
     this.labelEls = [];
+    this.nameEl = document.createElement('a-entity');
+    this.el.appendChild(this.nameEl);
+    this.nameEl.setAttribute('scale', 
+                             new Array(4).join(this.data.fontScale + ' '));
+                             
+    var namePos = [0, this.offset(2), this.offset(2)];
+    if(this.data.axis == 'y') {
+      namePos[1] = this.el.parentEl.components['plot-axis'].data.size / 2 - 
+                    this.offset(2);
+    } else if(this.data.axis == 'z') {
+      namePos[0] = -this.offset(2);
+      this.nameEl.setAttribute('rotation', '0 -90 0');
+    }
+    this.nameEl.setAttribute('position', namePos.join(' '));
+    this.nameEl.setAttribute('bmfont-text', {
+        width: 0, mode: 'nowrap',align: 'center'});
+
   },
   
-  update: function() {
+  update: function(oldData) {
+    if(this.data.name !== oldData.name) {
+      this.nameEl.setAttribute('bmfont-text', 'text', this.data.name);
+      this.nameEl.setAttribute('position', 
+                               this.data.axis == 'y' ? 'x' : this.data.axis, 
+                               this.offset(this.data.name.length));
+    }
     // if the two properties areupdated asyncrhonously
     // and are different lengths, wait for the second
     if(this.data.labels.length !== this.data.breaks.length) return;
@@ -327,11 +364,14 @@ AFRAME.registerComponent('plot-axis-text', {
   setLabel: function(labEl, lab, pos) {
     // compensate for width of string(approximate)
     var numChar = this.data.axis === 'y' ? 1 : lab.length;
-    pos -= numChar * 0.05 * this.data.fontScale;
+    pos += this.offset(numChar);
     labEl.setAttribute('bmfont-text', 'text', lab);
     labEl.setAttribute('position', this.data.axis, pos);
     labEl.setAttribute('scale', 
                        new Array(4).join(this.data.fontScale + ' '));
-  }
+  },
   
+  offset: function(nchar) {
+    return -0.05 * nchar * this.data.fontScale;
+  }
 });
