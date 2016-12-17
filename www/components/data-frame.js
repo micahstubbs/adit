@@ -44,12 +44,6 @@ AFRAME.registerComponent('data-frame', {
    
     //this.el.setAttribute("layout", schemaDat.layout);
     
-        var colliderEls = document.querySelectorAll('a-entity[sphere-collider]');
-    colliderEls.forEach(function (collEl) {
-      //if(coll.components[this.data.colliders].hasLoaded) {
-        collEl.components['sphere-collider'].update();
-      //}
-    });
   },
   
   updateData: function(newDat) {

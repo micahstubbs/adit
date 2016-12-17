@@ -129,7 +129,7 @@ shinyUI(fluidPage(
         # ),
         aframeEntity(
           position = ".6 1 -0.5",
-          #aDataFrameOutput("mydat"),
+          aDataFrameOutput("mydat"),
           id = "datacontainer"
         ),
         aframeEntity(id = "sky", geometry = "primitive: sphere; radius: 65;",
