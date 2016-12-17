@@ -35,7 +35,8 @@ shinyUI(fluidPage(
     tags$script(src = "components/aframe-stretch.js"),
     tags$script(src = "components/aframe-plot.js"),
     tags$script(src = "components/aframe-drag-drop.js"),
-    tags$script(src = "components/aframe-physics-collider.js")
+    tags$script(src = "components/aframe-physics-collider.js"),
+    tags$style("#vrcontent {height: 600px;}")
   ),
   # Application title
   titlePanel("VR Data Explorer"),
@@ -59,7 +60,9 @@ shinyUI(fluidPage(
     ),
     
     mainPanel(
+      id = "vrcontent",
       aframeScene(
+        embedded = "",
         physics = "gravity: 0;",
         fog = "color: #bc483e; near: 0; far: 65;",
         aframeAssets(
@@ -87,6 +90,8 @@ shinyUI(fluidPage(
           atags$mixin(id = "testbox", material = "color: blue"),
           atags$mixin(id = "testbox-collided", material = "color: green")
         ),
+        atags$entity(camera = "userHeight: 1.6", `look-controls` = "", 
+                     position = "0 0 0.33"),
         # Hand conttols
         aframeEntity(
           id = "lefthand",
@@ -102,22 +107,23 @@ shinyUI(fluidPage(
           id = "plotcontainer",
           mixin = "plottheme",
           position = "0 1.5 -0.5",
+          rotation = "0 45 0",
           plot = "size: 0.5",
           `dynamic-body` = "shape: box;",
           sleepy = "angularDamping: 0; speedLimit: 1",
           `collision-filter` = "group: plots;",
           aScatter3dOutput("myplot")
         ),
-        aframeBox(
-          position = "-1 1.5 -0.5",
-          width = "0.25", height = "0.25", depth = "0.25",
-          `dynamic-body` = "",
-          `collision-filter` = "group: notplots; collidesWith: notplots, default;",
-          sleepy = "",
-          class = "grabbable",
-          id = "testbox",
-          mixin = "testbox"
-        ),
+        # aframeBox(
+        #   position = "-1 1.5 -0.5",
+        #   width = "0.25", height = "0.25", depth = "0.25",
+        #   `dynamic-body` = "",
+        #   `collision-filter` = "group: notplots; collidesWith: notplots, default;",
+        #   sleepy = "",
+        #   class = "grabbable",
+        #   id = "testbox",
+        #   mixin = "testbox"
+        # ),
         # aframeBox(
         #   position = "-1 1.5 0.5",
         #   width = "0.25", height = "0.25", depth = "0.25",
@@ -129,7 +135,7 @@ shinyUI(fluidPage(
         #   id = "filterbox2"
         # ),
         aframeEntity(
-          position = ".6 1 -0.5",
+          position = "1 1 -0.5",
           aDataFrameOutput("mydat"),
           id = "datacontainer"
         ),
