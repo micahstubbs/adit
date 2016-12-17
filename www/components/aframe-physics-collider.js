@@ -4,7 +4,9 @@ AFRAME.registerComponent("physics-collider", {
   },
   init: function() {
     this.el.addEventListener("body-loaded", (evt) => {
-      evt.detail.target.body.collisionResponse = false; 
+      evt.detail.target.body.collisionResponse = false;
+      evt.detail.target.body.type = 0;
+      evt.detail.target.body.allowSleep = false;
     });
     this.collisions = [];
   },
