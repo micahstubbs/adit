@@ -36,6 +36,7 @@ shinyUI(fluidPage(
     tags$script(src = "components/aframe-plot.js"),
     tags$script(src = "components/aframe-drag-drop.js"),
     tags$script(src = "components/aframe-physics-collider.js"),
+    tags$script(src = "components/aframe-monitor-camera-tweak.js"),
     tags$style("#vrcontent {height: 600px;}")
   ),
   # Application title
@@ -90,8 +91,8 @@ shinyUI(fluidPage(
           atags$mixin(id = "testbox", material = "color: blue"),
           atags$mixin(id = "testbox-collided", material = "color: green")
         ),
-        atags$entity(camera = "userHeight: 1.6", `look-controls` = "", 
-                     position = "0 0 0.33"),
+        atags$entity(camera = "userHeight: 1.6", `look-controls` = "",
+                     `monitor-camera-tweak` = "", position = "0 0 .8"),
         # Hand conttols
         aframeEntity(
           id = "lefthand",
@@ -106,7 +107,7 @@ shinyUI(fluidPage(
         aframeEntity(
           id = "plotcontainer",
           mixin = "plottheme",
-          position = "0 1.5 -0.5",
+          position = "0 1.5 0",
           rotation = "0 45 0",
           plot = "size: 0.5",
           `dynamic-body` = "shape: box;",
@@ -135,7 +136,7 @@ shinyUI(fluidPage(
         #   id = "filterbox2"
         # ),
         aframeEntity(
-          position = "1 1 -0.5",
+          position = "1 1 -0.25",
           aDataFrameOutput("mydat"),
           id = "datacontainer"
         ),
