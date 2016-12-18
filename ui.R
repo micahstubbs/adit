@@ -65,9 +65,10 @@ shinyUI(fluidPage(
       aframeScene(
         embedded = "",
         physics = "gravity: 0;",
-        fog = "color: #bc483e; near: 0; far: 65;",
+        fog = "color: #cccccc; near: 0; far: 65;",
         aframeAssets(
           tags$img(id = "arrow", src = "textures/arrow.png"),
+          tags$img(id = "grid", src = "textures/grid2.png"),
           aframeMixin(
             id = "plottheme",
             geometry = "primitive: box; height: 0.5; width: 0.5; depth: 0.5",
@@ -140,23 +141,16 @@ shinyUI(fluidPage(
           aDataFrameOutput("mydat"),
           id = "datacontainer"
         ),
-        aframeEntity(id = "sky", geometry = "primitive: sphere; radius: 65;",
-                     material = "shader: skyGradient; colorTop: #353449; colorBottom: #BC483E; side: back"),
-        aframeEntity(ground = ""),
-        aframeEntity(light = "type: point; color: #f4f4f4; intensity: 0.2; distance: 0",
-                     position = "8 10 18"),
-        aframeEntity(light = "type: point; color: #f4f4f4; intensity: 0.6; distance: 0",
-                     position = "-8 10 -18"),
-        aframeEntity(light = "type: ambient; color: #f4f4f4; intensity: 0.4;",
-                     position = "-8 10 -18"),
-        # ground collision layer (not really necessary w/o gravity)
-        aframeEntity(geometry = "primitive: plane; height: 20; width: 20",
-                     material = "color: white;",
-                     `static-body` = "",
-                     `collision-filter` = "collidesWith: default, notplots, plots",
-                     rotation = "-90 0 0", position = "0 -0.05 0",
-                     id = "floorcollider")
-
+        atags$other("sun-sky", material = "sunPosition: -0.5 1 1"),
+        #ground layer w/ collision
+        aframeEntity(
+          geometry = "primitive: plane; width: 10000; height: 10000;",
+          material = "src: #grid; repeat: 10000 10000; shader: flat;",
+          `static-body` = "",
+          `collision-filter` = "collidesWith: notplots, plots, datacolumn",
+          rotation = "-90 0 0", position = "0 0 0",
+          id = "floorcollider"
+        )
       )
     )
   )
