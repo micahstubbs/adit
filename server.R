@@ -39,11 +39,24 @@ shinyServer(function(input, output) {
       mappings[update$mapping] <<- update$variable
     }
     usable_mappings <- mappings[mappings %in% names(selected_data())]
-    req(!anyNA(usable_mappings[c("x", "y", "z")]), 
-        cancelOutput = TRUE)
+    #req(!anyNA(usable_mappings[c("x", "y", "z")]), cancelOutput = TRUE)
+    positionals <- na.omit(usable_mappings[c("x", "y", "z")])
     mappings_aes <- do.call(aes_string, as.list(usable_mappings))
-    plt <- ggplot(selected_data(), mappings_aes) +
-      geom_point()
+    plt <- switch(
+      length(positionals), 
+      { #1
+        mappings_aes <- do.call(aes_string, as.list(usable_mappings))
+        ggplot(selected_data(), mappings_aes) + geom_dotplot()
+      },
+      { #2
+        mappings_aes <- do.call(aes_string, as.list(usable_mappings))
+        ggplot(selected_data(), mappings_aes) + geom_dotplot()
+      },
+      { #3
+        mappings_aes <- do.call(aes_string, as.list(usable_mappings))
+        ggplot(selected_data(), mappings_aes) + geom_point()
+      }
+    ) 
     aScatter3d(plt)
   })
   
