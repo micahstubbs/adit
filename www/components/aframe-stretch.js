@@ -91,23 +91,23 @@ AFRAME.registerComponent('stretch', {
   tick: function () {
     var hitEl = this.hitEl;
     if (!hitEl) { return; }
-    var scale;
+    var scale = new CANNON.Vec3(),
+        hitElGeom = hitEl.getComputedAttribute('geometry');
     this.updateDelta();
-    scale = hitEl.getComputedAttribute('scale');
-    hitEl.setAttribute('scale', {
-      x: scale.x * this.deltaStretch,
-      y: scale.y * this.deltaStretch,
-      z: scale.z * this.deltaStretch
-    });
-    //temporary hack: force recreation of the physics body
-    //with the new scale. appears to have a cumulative 
-    //performance impact
+    scale = scale.copy(hitEl.getComputedAttribute('scale'));
+    scale.scale(this.deltaStretch, scale);
+    hitEl.setAttribute('scale', scale);
+    // force scale update for physics body
     if(hitEl.components['dynamic-body']) {
-      var bodycomp = hitEl.components['dynamic-body'];
-      bodycomp.system.removeBody(bodycomp.body);
-      //bodycomp.el.sceneEl.object3D.remove(bodycomp.wireframe);
-      bodycomp.initBody();
+      var physicsShape = hitEl.components['dynamic-body'].body.shapes[0];
+      physicsShape.halfExtents.set(hitElGeom.width / 2 * scale.x,
+                                   hitElGeom.height / 2 * scale.y,
+                                   hitElGeom.depth / 2 * scale.z);
+      physicsShape.updateConvexPolyhedronRepresentation();
+      hitEl.body.updateBoundingRadius();
     }
+    // need to update relationship of grabbing hand to object for a natural
+    // stretch feeling
 
   },
 
