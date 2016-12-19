@@ -113,6 +113,7 @@ AFRAME.registerComponent('stretch', {
         physicsShape.halfExtents.set(hitElGeom.width / 2 * scale.x,
                                      hitElGeom.height / 2 * scale.y,
                                      hitElGeom.depth / 2 * scale.z);
+        physicsShape.updateConvexPolyhedronRepresentation();
       }
       hitEl.body.updateBoundingRadius();
     }
