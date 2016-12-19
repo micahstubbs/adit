@@ -69,6 +69,10 @@ AFRAME.registerComponent('stretch', {
   onGripOpen: function (evt) {
     var hitEl = this.hitEl;
     this.grabbing = false;
+    if(this.constraint) {
+      this.el.body.world.removeConstraint(this.constraint);
+      this.constraint = null;
+    }
     if (!hitEl) { return; }
     hitEl.removeState(this.STRETCHED_STATE);
     this.hitEl = undefined;
@@ -81,11 +85,16 @@ AFRAME.registerComponent('stretch', {
     // is grabbed by the other controller
     if(hitEl && this.grabbing && !this.hitEl &&
         !this.el.components.grab.hitEl &&
-       !hitEl.is(this.STRETCHED_STATE) &&
-       hitEl === this.otherController.components.grab.hitEl) {
-         hitEl.addState(this.STRETCHED_STATE);
-         this.hitEl = hitEl;
-       }
+        !hitEl.is(this.STRETCHED_STATE) &&
+        hitEl === this.otherController.components.grab.hitEl
+       ) {
+      hitEl.addState(this.STRETCHED_STATE);
+      this.hitEl = hitEl;
+      // adding a second constraint helps for a natural stretch feeling
+      // the body stays anchored at a midpoint between the two controllers
+      this.constraint = new CANNON.LockConstraint(this.el.body, hitEl.body);
+      this.el.body.world.addConstraint(this.constraint);
+    }
   },
   
   tick: function () {
@@ -107,8 +116,6 @@ AFRAME.registerComponent('stretch', {
       }
       hitEl.body.updateBoundingRadius();
     }
-    // need to update relationship of grabbing hand to object for a natural
-    // stretch feeling
 
   },
 
