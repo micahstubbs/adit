@@ -98,12 +98,13 @@ AFRAME.registerComponent('stretch', {
     scale.scale(this.deltaStretch, scale);
     hitEl.setAttribute('scale', scale);
     // force scale update for physics body
-    if(hitEl.components['dynamic-body']) {
-      var physicsShape = hitEl.components['dynamic-body'].body.shapes[0];
-      physicsShape.halfExtents.set(hitElGeom.width / 2 * scale.x,
-                                   hitElGeom.height / 2 * scale.y,
-                                   hitElGeom.depth / 2 * scale.z);
-      physicsShape.updateConvexPolyhedronRepresentation();
+    if(hitEl.body) {
+      var physicsShape = hitEl.body.shapes[0];
+      if(physicsShape.halfExtents) {
+        physicsShape.halfExtents.set(hitElGeom.width / 2 * scale.x,
+                                     hitElGeom.height / 2 * scale.y,
+                                     hitElGeom.depth / 2 * scale.z);
+      }
       hitEl.body.updateBoundingRadius();
     }
     // need to update relationship of grabbing hand to object for a natural
