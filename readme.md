@@ -16,11 +16,15 @@ To examine the resulting plot,
 you can grab the plot to move and rotate it with a controller. 
 If you release it with a twist of the wrist, the plot
 will remain animated in a spin. 
-You can also grab the plot with two hands to stretch or shrink it 
-(but this will degreade performance until you refresh the page for now).
+You can also grab the plot with two hands to stretch or shrink it.
 
 ### Latest Updates
 
+* `stretch` component allows for two-handed grab and stretch of entities.
+  Currently incomplete:
+    * Efficient direct update of physics bodies to match scale
+    * It's possible to inadvertently pickup another object while 
+      stretching
 * Scales for plots: added `plot-axis-text` component. This will be automatically
   added to a `plot` and label x, y, and z axes. Supports numeric labels and text
   labels for factors. Labels the name of the mapped variable as the scale title.
@@ -49,12 +53,6 @@ You can also grab the plot with two hands to stretch or shrink it
       [shinyaframe](http://github.com/wmurphyrd/shinyaframe) 
       `aScatter3d` widget
       and manages data point display
-* `stretch` component allows for two-handed grab and stretch of entities.
-  Currently incomplete:
-    * Updating the physics body shape during stretch greatly degrades
-      performance (but makes for a smooth interaction feel)
-    * It's possible to inadvertently pickup another object while 
-      stretching
 * `collision-filter` component and system to easily
   manage collision groups (which objects have physics ineractions
   with each other and  which don't) via `CANNON.js` settings
