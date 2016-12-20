@@ -69,6 +69,10 @@ AFRAME.registerComponent('stretch', {
   onGripOpen: function (evt) {
     var hitEl = this.hitEl;
     this.grabbing = false;
+    if(this.constraint) {
+      this.el.body.world.removeConstraint(this.constraint);
+      this.constraint = null;
+    }
     if (!hitEl) { return; }
     hitEl.removeState(this.STRETCHED_STATE);
     this.hitEl = undefined;
@@ -81,32 +85,37 @@ AFRAME.registerComponent('stretch', {
     // is grabbed by the other controller
     if(hitEl && this.grabbing && !this.hitEl &&
         !this.el.components.grab.hitEl &&
-       !hitEl.is(this.STRETCHED_STATE) &&
-       hitEl === this.otherController.components.grab.hitEl) {
-         hitEl.addState(this.STRETCHED_STATE);
-         this.hitEl = hitEl;
-       }
+        !hitEl.is(this.STRETCHED_STATE) &&
+        hitEl === this.otherController.components.grab.hitEl
+       ) {
+      hitEl.addState(this.STRETCHED_STATE);
+      this.hitEl = hitEl;
+      // adding a second constraint helps for a natural stretch feeling
+      // the body stays anchored at a midpoint between the two controllers
+      this.constraint = new CANNON.LockConstraint(this.el.body, hitEl.body);
+      this.el.body.world.addConstraint(this.constraint);
+    }
   },
   
   tick: function () {
     var hitEl = this.hitEl;
     if (!hitEl) { return; }
-    var scale;
+    var scale = new CANNON.Vec3(),
+        hitElGeom = hitEl.getComputedAttribute('geometry');
     this.updateDelta();
-    scale = hitEl.getComputedAttribute('scale');
-    hitEl.setAttribute('scale', {
-      x: scale.x * this.deltaStretch,
-      y: scale.y * this.deltaStretch,
-      z: scale.z * this.deltaStretch
-    });
-    //temporary hack: force recreation of the physics body
-    //with the new scale. appears to have a cumulative 
-    //performance impact
-    if(hitEl.components['dynamic-body']) {
-      var bodycomp = hitEl.components['dynamic-body'];
-      bodycomp.system.removeBody(bodycomp.body);
-      //bodycomp.el.sceneEl.object3D.remove(bodycomp.wireframe);
-      bodycomp.initBody();
+    scale = scale.copy(hitEl.getComputedAttribute('scale'));
+    scale.scale(this.deltaStretch, scale);
+    hitEl.setAttribute('scale', scale);
+    // force scale update for physics body
+    if(hitEl.body) {
+      var physicsShape = hitEl.body.shapes[0];
+      if(physicsShape.halfExtents) {
+        physicsShape.halfExtents.set(hitElGeom.width / 2 * scale.x,
+                                     hitElGeom.height / 2 * scale.y,
+                                     hitElGeom.depth / 2 * scale.z);
+        physicsShape.updateConvexPolyhedronRepresentation();
+      }
+      hitEl.body.updateBoundingRadius();
     }
 
   },

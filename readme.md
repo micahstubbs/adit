@@ -6,16 +6,28 @@ the R language for statistical computing and virtual reality via
 
 ## Current Status
 
-Adit renders data from the `iris` dataset in a 3d scatter plot, mapping
-data to x, y, z, color, and shape. You can grab the plot to move and
-rotate it
-with a controller. If you release it with a twist of the wrist, the plot
-will remain animated in a spin. You can also grab the plot with two 
-hands to stretch or shrink it 
-(but this will degreade performance until you refresh the page for now).
+Adit renders data from the `iris` and `mtcars` datasets in a 3d scatter plot 
+with mapping capabilities for x, y, z, color, shape, and size. 
+The x, y, and z mappings can be selected in VR by grabbing a variable name
+card and dropping it into the desired axis. Legends and interactive mapping
+for color, shape, and size are coming soon. 
+
+To examine the resulting plot, 
+you can grab the plot to move and rotate it with a controller. 
+If you release it with a twist of the wrist, the plot
+will remain animated in a spin. 
+You can also grab the plot with two hands to stretch or shrink it.
 
 ### Latest Updates
 
+* `stretch` component allows for two-handed grab and stretch of entities.
+  Currently incomplete:
+    * Efficient direct update of physics bodies to match scale
+    * It's possible to inadvertently pickup another object while 
+      stretching
+* Scales for plots: added `plot-axis-text` component. This will be automatically
+  added to a `plot` and label x, y, and z axes. Supports numeric labels and text
+  labels for factors. Labels the name of the mapped variable as the scale title.
 * Performance improvements
     * Plot updates are queued and completed as time is available to avoid 
       locking out the render thread
@@ -24,9 +36,6 @@ hands to stretch or shrink it
     * New `physics-collider` component is drop-in replacement for 
       `sphere-collider` that uses the `physics` engine's existing 
       collision detection instead of calculating its own collisions
-* Scales for plots: added `plot-axis-text` component. This will be automatically
-  added to a `plot` and label x, y, and z axes. Supports numeric labels and text
-  labels for factors.
 * Interactive plot building: plots can now be built within Adit by dragging
   data columns onto the axes.
     * `drag-drop` component for controllers. Tells targets when they are
@@ -44,12 +53,6 @@ hands to stretch or shrink it
       [shinyaframe](http://github.com/wmurphyrd/shinyaframe) 
       `aScatter3d` widget
       and manages data point display
-* `stretch` component allows for two-handed grab and stretch of entities.
-  Currently incomplete:
-    * Updating the physics body shape during stretch greatly degrades
-      performance (but makes for a smooth interaction feel)
-    * It's possible to inadvertently pickup another object while 
-      stretching
 * `collision-filter` component and system to easily
   manage collision groups (which objects have physics ineractions
   with each other and  which don't) via `CANNON.js` settings
@@ -68,9 +71,6 @@ hands to stretch or shrink it
   from @donmccurdy for improved grabbing (rotation & position) via `CANNON.js`
   constraints
 
-
-Now that basic mapping is working, the current focus will be on UI within VR
-to build plots interactively. 
 
 ## Try it
 
