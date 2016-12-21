@@ -173,24 +173,17 @@ AFRAME.registerComponent('plot-axis', {
   },
   
   play: function () {
-    this.axis.addEventListener('stateadded', 
+    this.el.addEventListener('stateadded', 
                                this.hover.bind(this));
-    this.axis.addEventListener('stateremoved', 
+    this.el.addEventListener('stateremoved', 
                                this.unHover.bind(this));
-    this.mirror.addEventListener('stateadded', 
-                                 this.hover.bind(this));
-    this.mirror.addEventListener('stateremoved', 
-                                 this.unHover.bind(this));
+
   },
   pause: function () {
-    this.axis.removeEventListener('stateadded', 
+    this.el.removeEventListener('stateadded', 
                                   this.hover.bind(this));
-    this.axis.removeEventListener('stateremoved', 
+    this.el.removeEventListener('stateremoved', 
                                   this.unHover.bind(this));
-    this.mirror.removeEventListener('stateadded', 
-                                    this.hover.bind(this));
-    this.mirror.removeEventListener('stateremoved', 
-                                    this.unHover.bind(this));    
   },
   
   hover: function (evt) {
