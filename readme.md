@@ -6,11 +6,11 @@ the R language for statistical computing and virtual reality via
 
 ## Current Status
 
-Adit renders data from the `iris` and `mtcars` datasets in a 3d scatter plot 
-with mapping capabilities for x, y, z, color, shape, and size. 
-The x, y, and z mappings can be selected in VR by grabbing a variable name
-card and dropping it into the desired axis. Legends and interactive mapping
-for color, shape, and size are coming soon. 
+Adit can build data visualizations interactively in VR.
+Historgrams, scatter plots, and 3-d scatter plots can be built by dragging
+variable name cards and dropping them on the desired axis. 
+Adit can also map data to shape, color, and size of the points in the plot
+(legends and user interface to set these interactively are coming soon).
 
 To examine the resulting plot, 
 you can grab the plot to move and rotate it with a controller. 
@@ -20,6 +20,14 @@ You can also grab the plot with two hands to stretch or shrink it.
 
 ### Latest Updates
 
+* 1-D and 2-D plots: when building a new plot from scratch, the Adit plot
+  will show you the intermediate steps. Try changing the dataset selection 
+  to "mtcars" or "diamonds" to see this in action. 
+    * The first variable mapped will produce
+      a dot-histogram showing the distribution of that variable 
+      (try it on the `y` and `z` axes, too!)
+    * With two variables mapped, a 2-D scatter plot will display 
+      (centered on whichever the 3rd, unmapped axis is)
 * `stretch` component allows for two-handed grab and stretch of entities.
   Currently incomplete:
     * Efficient direct update of physics bodies to match scale
@@ -39,7 +47,7 @@ You can also grab the plot with two hands to stretch or shrink it.
 * Interactive plot building: plots can now be built within Adit by dragging
   data columns onto the axes.
     * `drag-drop` component for controllers. Tells targets when they are
-      hovered over and tells targets and carried entities when a successfull
+      hovered over and tells targets and carried entities when a successful
       drag-and-drop interaction occurs. 
     * `data-frame` component receives data from
       [shinyaframe](http://github.com/wmurphyrd/shinyaframe) 
@@ -54,7 +62,7 @@ You can also grab the plot with two hands to stretch or shrink it.
       `aScatter3d` widget
       and manages data point display
 * `collision-filter` component and system to easily
-  manage collision groups (which objects have physics ineractions
+  manage collision groups (which objects have physics interactions
   with each other and  which don't) via `CANNON.js` settings
   `collisionFilterGroup` and `collisionFilterMask`
 * `sleepy` component to utilize 
@@ -62,7 +70,7 @@ You can also grab the plot with two hands to stretch or shrink it.
   and control damping. In WebVR Chromium 56, this can cause `dynamic-body` 
   entities to be obliterated. Can use v55 WebVR build instead.
     * With default settings, objects quickly come to rest after
-      after relase regardless of release velocity.
+      after release regardless of release velocity.
     * Changing angularDamping to 0 and increasing the speedLimit creates
       a situation where objects released with a twist will cease linear
       translation but maintain their rotational spin indefinitely
@@ -79,8 +87,10 @@ http://wmurphyrd.shinyapps.io/adit.
 
 ## Requirements
 Adit requires a complete VR system (rotational & positional tracking with
-hand controllers). Oculus Rift + Touch has joined the HTC Vive
-in offering this experience, but I can only test with the Vive for now.
+hand controllers). With the recent release of A-Frame v0.4.0, 
+Oculus Rift + Touch has joined the HTC Vive
+in offering this experience. I will be updating A-Frame to v0.4.0 in 
+this project soon.
 
 WebVR is still experimental and only available in test versions of browsers. 
 Currently, only [Chromium](https://webvr.info/get-chrome/) 
