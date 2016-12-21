@@ -10,6 +10,7 @@
 library(shiny)
 library(shinyaframe)
 library(ggplot2)
+library(dplyr)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
@@ -20,10 +21,12 @@ shinyServer(function(input, output) {
                 shape = "Species")
  
   selected_data <- reactive({
-    switch(input$datasource, 
-           "iris" = iris,
-           "mtcars" = mtcars,
-           "diamonds" = as.data.frame(diamonds))
+    switch(
+      input$datasource, 
+      "iris" = iris,
+      "mtcars" = mtcars,
+      "diamonds" = as.data.frame(sample_n(diamonds, 300))
+    )
   }) 
   
   output$dataset <- renderTable({
@@ -38,12 +41,23 @@ shinyServer(function(input, output) {
     if(!is.null(update$variable)) {
       mappings[update$mapping] <<- update$variable
     }
-    usable_mappings <- mappings[mappings %in% names(selected_data())]
-    req(!anyNA(usable_mappings[c("x", "y", "z")]), 
-        cancelOutput = TRUE)
-    mappings_aes <- do.call(aes_string, as.list(usable_mappings))
-    plt <- ggplot(selected_data(), mappings_aes) +
-      geom_point()
+    # clear out old mappings when the dataset changes
+    mappings <<- mappings[mappings %in% names(selected_data())]
+    positionals <- na.omit(mappings[c("x", "y", "z")])
+    mappings_aes <- do.call(aes_string, as.list(mappings))
+    plt <- switch(
+      length(positionals), 
+      { #1
+        ggplot(selected_data(), mappings_aes) + 
+          geom_dotplot(method = "histodot")
+      },
+      { #2
+        ggplot(selected_data(), mappings_aes) + geom_point()
+      },
+      { #3
+        ggplot(selected_data(), mappings_aes) + geom_point()
+      }
+    ) 
     aScatter3d(plt)
   })
   

@@ -232,38 +232,37 @@ AFRAME.registerComponent("plot-area", {
   updateCallback: function() {
     var pdat, p, an,
         dataLen = this.data.points.length;
-    if (this.queuePos < dataLen) {
-      // remove any extra entities first
-      if (this.pointEls.length > dataLen) {
-        this.el.removeChild(this.pointEls[dataLen]);
-        this.pointEls.splice(dataLen, 1);
+    // remove any extra entities first
+    if (this.pointEls.length > dataLen) {
+      this.el.removeChild(this.pointEls[dataLen]);
+      this.pointEls.splice(dataLen, 1);
+      setTimeout(this.updateCallback.bind(this));
+    } else if (this.queuePos < dataLen) {
+      pdat = this.data.points[this.queuePos];
+      //create new entities as needed
+      if(this.queuePos >= this.pointEls.length) {
+        p = document.createElement('a-entity');
+        this.el.appendChild(p);
+        p.setAttribute('position', '0 0 0');
+        this.pointEls.push(p);
       } else {
-        pdat = this.data.points[this.queuePos];
-        //create new entities as needed
-        if(this.queuePos >= this.pointEls.length) {
-          p = document.createElement('a-entity');
-          this.el.appendChild(p);
-          p.setAttribute('position', '0 0 0');
-          this.pointEls.push(p);
-        } else {
-          p = this.pointEls[this.queuePos];
-        }
-        p.setAttribute('geometry', pdat.geometry);
-        p.setAttribute('material', pdat.material);
-        p.setAttribute('animation', 
-                       'property: position; ' + 
-                         'startEvents: '+ this.POINT_UPDATED + 
-                         '; to: ' + [pdat.x, pdat.y, pdat.z].join(' ')
-                      );
-        if(p.hasLoaded) {
-          p.emit(this.POINT_UPDATED, {}, false);
-        } else {
-          p.addEventListener('loaded', (evt) => {
-            evt.detail.target.emit(this.POINT_UPDATED, {}, false);
-          });
-        }
-        this.queuePos++;
+        p = this.pointEls[this.queuePos];
       }
+      p.setAttribute('geometry', pdat.geometry);
+      p.setAttribute('material', pdat.material);
+      p.setAttribute('animation', 
+                     'property: position; ' + 
+                       'startEvents: '+ this.POINT_UPDATED + 
+                       '; to: ' + [pdat.x, pdat.y, pdat.z].join(' ')
+                    );
+      if(p.hasLoaded) {
+        p.emit(this.POINT_UPDATED, {}, false);
+      } else {
+        p.addEventListener('loaded', (evt) => {
+          evt.detail.target.emit(this.POINT_UPDATED, {}, false);
+        });
+      }
+      this.queuePos++;
       setTimeout(this.updateCallback.bind(this));
     } else {
       this.el.emit("plotUpdateComplete");
