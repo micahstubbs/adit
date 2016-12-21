@@ -48,7 +48,8 @@ shinyServer(function(input, output) {
     plt <- switch(
       length(positionals), 
       { #1
-        ggplot(selected_data(), mappings_aes) + geom_dotplot()
+        ggplot(selected_data(), mappings_aes) + 
+          geom_dotplot(method = "histodot")
       },
       { #2
         ggplot(selected_data(), mappings_aes) + geom_point()
