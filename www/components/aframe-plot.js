@@ -16,12 +16,33 @@ AFRAME.registerComponent('plot', {
     var self = this;
     var size = this.data.size;
     self.axes = [];
+    this.guides = [];
     // register axes
     ['x', 'y', 'z'].forEach(function (axis) {
       var axEl = document.createElement('a-entity');
       self.el.appendChild(axEl);
       axEl.setAttribute('plot-axis', { axis: axis, size: size });
       self.axes.push(axEl);
+    });
+    this.guideArea = document.createElement('a-entity');
+    this.el.append(this.guideArea);
+    this.guideArea.setAttribute('position', {
+      x: size / -2 - 0.1, y: size / -2 + 0.02, z: size / -2 - 0.1
+    });
+    this.guideArea.setAttribute('rotation', '0 -45 0');
+    this.guideArea.setAttribute('layout', 
+                                'type: box; margin: ' + ((size - 0.04) / 3));
+    ['color', 'shape', 'size'].forEach( (guide) => {
+      var guideEl = document.createElement('a-entity');
+      this.guideArea.appendChild(guideEl);
+      switch(guide) {
+        case 'color': testBreaks = ['red', 'yellow', 'blue']; break;
+        case 'size': testBreaks = [0.005, 0.01, 0.02]; break;
+        case 'shape': testBreaks = ['sphere', 'box', 'cone']; 
+      }
+      guideEl.setAttribute('plot-guide', { aesthetic: guide, size: size / 3,
+        breaks: testBreaks, labels: testBreaks});
+      this.guides.push(guideEl);
     });
     
   },
@@ -365,5 +386,93 @@ AFRAME.registerComponent('plot-axis-text', {
   
   offset: function(nchar) {
     return -0.05 * nchar * this.data.fontScale;
+  }
+});
+
+AFRAME.registerComponent('plot-guide', {
+  schema: {
+    aesthetic: { default: '' },
+    breaks: { default: [] },
+    labels: { default: [] },
+    size: { default: 1 },
+    fontScale: { default: 0.15 }
+  },
+  init: function() {
+    this.defaults = { 
+      width: 0.01, height: 0.01, depth: 0.01, radius: 0.01, 
+      'radius-bottom': 0.01, 'radius-top': 0.001, 'radius-tubular': 0.002,
+      shape: 'sphere', color: 'black'
+    };
+    this.el.setAttribute('layout', 'type: line; margin: 0.12');
+    this.el.setAttribute('static-body', 'shape: box;');
+    // add a hidden mesh to stretch the physics body over the text
+    this.el.setAttribute('geometry', 'primitive: plane; ' +
+                                      'width: 0.01; height: 0.01;');
+    this.el.setAttribute('material', 'visible: false;');
+    this.el.className += ' hoverable';
+    // aesthetic mapping to pass to shiny
+    this.el.axis = this.data.aesthetic; 
+    this.labels = document.createElement('a-entity');
+    this.el.appendChild(this.labels);
+    this.labels.setAttribute('layout', 'type: box');
+    this.marks = document.createElement('a-entity');
+    this.el.appendChild(this.marks);
+    this.marks.setAttribute('layout', 'type: box;');
+    this.highlight = this.highlight.bind(this);
+    this.unHighlight = this.unHighlight.bind(this);
+  },
+  update: function(oldDat) {
+    var aes = this.data.aesthetic == 'size' ? 'radius' : this.data.aesthetic;
+    // wait for both if asynch update
+    if(this.data.breaks.length !== this.data.labels.length) return;
+    while(this.marks.lastChild) {
+      this.marks.removeChild(this.marks.lastChild);
+    }
+    while(this.labels.lastChild) {
+      this.labels.removeChild(this.labels.lastChild);
+    }
+    AFRAME.utils.extend(this.defaults, this.data.overrides);
+    this.marks.setAttribute('layout', 'margin', 
+                         this.data.size / this.data.breaks.length);
+    this.labels.setAttribute('layout', 'margin', 
+                         this.data.size / this.data.breaks.length);
+    this.data.breaks.forEach( (b) => {
+      var mark = AFRAME.utils.extend({}, this.defaults);
+      mark[aes] = b;
+      var markEl = document.createElement('a-' + mark.shape);
+      delete mark.shape;
+      Object.keys(mark).forEach( (prop) => {
+        markEl.setAttribute(prop, mark[prop]);
+      });
+      this.marks.appendChild(markEl);
+    });
+    this.data.labels.forEach( (l) => {
+      var labEl = document.createElement('a-entity');
+      this.labels.appendChild(labEl);
+      labEl.setAttribute('scale', new Array(4).join(this.data.fontScale + ' '));
+      labEl.setAttribute('bmfont-text', {
+        text: l + '', width: 115, mode: 'nowrap', align: 'right'});
+      this.labels.appendChild(labEl);
+    });
+  },
+  play: function() {
+    this.el.addEventListener('stateadded', this.highlight);
+    this.el.addEventListener('stateremoved', this.unHighlight);
+  },
+  pause: function() {
+    this.el.removeEventListener('stateadded', this.highlight);
+    this.el.removeEventListener('stateremoved', this.unHighlight);
+  },
+  highlight: function(evt) {
+    if(evt.detail.state !== 'hovered') { return; }
+    for(var lab of this.labels.childNodes) {
+      lab.setAttribute('bmfont-text', 'color', '#827d07');
+    }
+  },
+  unHighlight: function(evt) {
+    if(evt.detail.state !== 'hovered') { return; }
+    for(var lab of this.labels.childNodes) {
+      lab.setAttribute('bmfont-text', 'color', '#000');
+    }
   }
 });
