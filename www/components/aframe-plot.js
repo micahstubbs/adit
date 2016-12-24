@@ -1,7 +1,8 @@
 AFRAME.registerComponent('plot', {
   schema: { 
     size: { default: 0.5 },
-    xname: {default: ''},
+    points: { default: [] },
+    xname: {default: '' },
     xlabels: { default: [] },
     xbreaks: { default: [] },
     yname: {default: ''},
@@ -20,12 +21,16 @@ AFRAME.registerComponent('plot', {
     sizebreaks: { default: [] },
     sizelabels: { default: [] }
   },
-  dependencies: ['geometry'],
   init: function() {
     var self = this;
     var size = this.data.size;
+    this.updatePending = false;
     self.axes = [];
     this.guides = [];
+    //register plotting area
+    this.plotArea = document.createElement('a-entity');
+    this.el.appendChild(this.plotArea);
+    this.plotArea.setAttribute('plot-area', '');
     // register axes
     ['x', 'y', 'z'].forEach(function (axis) {
       var axEl = document.createElement('a-entity');
@@ -54,8 +59,12 @@ AFRAME.registerComponent('plot', {
   
   update: function() {
     var dat = this.data;
-    this.axes.forEach(function(ax) {
-      if(!ax.components['plot-axis'].data) return;
+    this.plotArea.setAttribute('plot-area', { points: this.data.points });
+    this.axes.forEach( (ax) => {
+      if(!ax.components['plot-axis'].data) {
+        this.updatePending = true; 
+        return; 
+      }
       var newBreaks, newLabels, newName;
       switch(ax.components['plot-axis'].data.axis) {
         case 'x':
@@ -80,7 +89,10 @@ AFRAME.registerComponent('plot', {
 
     });
     this.guides.forEach( (guide) => {
-      if(!guide.components['plot-guide'].data) return;
+      if(!guide.components['plot-guide'].data) {
+        this.updatePending = true; 
+        return; 
+      }
       aes = guide.components['plot-guide'].data.aesthetic;
       guide.setAttribute('plot-guide', 
         AFRAME.utils.extend(guide.getComputedAttribute('plot-guide'),
@@ -90,6 +102,12 @@ AFRAME.registerComponent('plot', {
         }));
     });
     
+  },
+  tick: function() {
+    if(this.updatePending) {
+      this.updatePending = false;
+      this.update();
+    }
   }
 });
 
@@ -241,25 +259,7 @@ AFRAME.registerComponent('plot-axis', {
 
 AFRAME.registerComponent("plot-area", {
   schema: { 
-    points: { default: [] },
-    xname: {default: ''},
-    xlabels: { default: [] },
-    xbreaks: { default: [] },
-    yname: {default: ''},
-    ylabels: { default: [] },
-    ybreaks: { default: [] },
-    zname: {default: ''},
-    zlabels: { default: [] },
-    zbreaks: { default: [] },
-    colorname: { default: '' },
-    colorbreaks: { default: [] },
-    colorlabels: { default: [] },
-    shapename: { default: '' },
-    shapebreaks: { default: [] },
-    shapelabels: { default: [] },
-    sizename: { default: '' },
-    sizebreaks: { default: [] },
-    sizelabels: { default: [] }
+    points: { default: [] }
   },
   
   init: function () {
@@ -308,32 +308,8 @@ AFRAME.registerComponent("plot-area", {
     }
   },
   update: function () {
-    var parent = this.el.parentEl,
-        dat = this.data,
-        // pass scale info up without overwriting other settings
-        plotDat = AFRAME.utils.extend(parent.getComputedAttribute('plot'),
-                                      { xname: dat.xname,
-                                        xlabels: dat.xlabels,
-                                        xbreaks: dat.xbreaks,
-                                        yname: dat.yname,
-                                        ylabels: dat.ylabels,
-                                        ybreaks: dat.ybreaks,
-                                        zname: dat.zname,
-                                        zlabels: dat.zlabels,
-                                        zbreaks: dat.zbreaks,
-                                        colorname: dat.colorname,
-                                        colorbreaks: dat.colorbreaks,
-                                        colorlabels: dat.colorlabels,
-                                        shapename: dat.shapename,
-                                        shapebreaks: dat.shapebreaks,
-                                        shapelabels: dat.shapelabels,
-                                        sizename: dat.sizename,
-                                        sizebreaks: dat.sizebreaks,
-                                        sizelabels: dat.sizelabels
-                                      });
     this.queuePos = 0;
     setTimeout(this.updateCallback.bind(this));
-    parent.setAttribute('plot', plotDat);
   }
 });
 

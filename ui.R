@@ -105,16 +105,15 @@ shinyUI(fluidPage(
           `vive-controls`="hand: right",
           mixin = "controller"
         ),
-        aframeEntity(
-          id = "plotcontainer",
+        aScatter3dOutput(
+          "myplot",
           mixin = "plottheme",
           position = "0 1.5 0",
           rotation = "0 45 0",
           plot = "size: 0.5",
           `dynamic-body` = "shape: box;",
           sleepy = "angularDamping: 0; speedLimit: 1",
-          `collision-filter` = "group: plots;",
-          aScatter3dOutput("myplot")
+          `collision-filter` = "group: plots;"
         ),
         # aframeBox(
         #   position = "-1 1.5 -0.5",
