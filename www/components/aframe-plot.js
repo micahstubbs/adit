@@ -9,7 +9,16 @@ AFRAME.registerComponent('plot', {
     ybreaks: { default: [] },
     zname: {default: ''},
     zlabels: { default: [] },
-    zbreaks: { default: [] } 
+    zbreaks: { default: [] },
+    colorname: { default: '' },
+    colorbreaks: { default: [] },
+    colorlabels: { default: [] },
+    shapename: { default: '' },
+    shapebreaks: { default: [] },
+    shapelabels: { default: [] },
+    sizename: { default: '' },
+    sizebreaks: { default: [] },
+    sizelabels: { default: [] }
   },
   dependencies: ['geometry'],
   init: function() {
@@ -27,7 +36,7 @@ AFRAME.registerComponent('plot', {
     this.guideArea = document.createElement('a-entity');
     this.el.append(this.guideArea);
     this.guideArea.setAttribute('position', {
-      x: size / -2 - 0.1, y: size / -2 + 0.02, z: size / -2 - 0.1
+      x: size / -2 - 0.15, y: size / -2 + 0.02, z: size / -2 - 0.15
     });
     this.guideArea.setAttribute('rotation', '0 -45 0');
     this.guideArea.setAttribute('layout', 
@@ -35,13 +44,9 @@ AFRAME.registerComponent('plot', {
     ['color', 'shape', 'size'].forEach( (guide) => {
       var guideEl = document.createElement('a-entity');
       this.guideArea.appendChild(guideEl);
-      switch(guide) {
-        case 'color': testBreaks = ['red', 'yellow', 'blue']; break;
-        case 'size': testBreaks = [0.005, 0.01, 0.02]; break;
-        case 'shape': testBreaks = ['sphere', 'box', 'cone']; 
-      }
-      guideEl.setAttribute('plot-guide', { aesthetic: guide, size: size / 3,
-        breaks: testBreaks, labels: testBreaks});
+      guideEl.setAttribute('plot-guide', { 
+        aesthetic: guide, size: size / 3
+      });
       this.guides.push(guideEl);
     });
     
@@ -73,7 +78,18 @@ AFRAME.registerComponent('plot', {
       ax.setAttribute('plot-axis', 'breaks', newBreaks);
       ax.setAttribute('plot-axis', 'labels', newLabels);
 
-    }); 
+    });
+    this.guides.forEach( (guide) => {
+      if(!guide.components['plot-guide'].data) return;
+      aes = guide.components['plot-guide'].data.aesthetic;
+      guide.setAttribute('plot-guide', 
+        AFRAME.utils.extend(guide.getComputedAttribute('plot-guide'),
+        { name: this.data[aes + 'name'],
+          breaks: this.data[aes + 'breaks'],
+          labels: this.data[aes + 'labels']
+        }));
+    });
+    
   }
 });
 
@@ -234,7 +250,16 @@ AFRAME.registerComponent("plot-area", {
     ybreaks: { default: [] },
     zname: {default: ''},
     zlabels: { default: [] },
-    zbreaks: { default: [] }    
+    zbreaks: { default: [] },
+    colorname: { default: '' },
+    colorbreaks: { default: [] },
+    colorlabels: { default: [] },
+    shapename: { default: '' },
+    shapebreaks: { default: [] },
+    shapelabels: { default: [] },
+    sizename: { default: '' },
+    sizebreaks: { default: [] },
+    sizelabels: { default: [] }
   },
   
   init: function () {
@@ -295,7 +320,17 @@ AFRAME.registerComponent("plot-area", {
                                         ybreaks: dat.ybreaks,
                                         zname: dat.zname,
                                         zlabels: dat.zlabels,
-                                        zbreaks: dat.zbreaks });
+                                        zbreaks: dat.zbreaks,
+                                        colorname: dat.colorname,
+                                        colorbreaks: dat.colorbreaks,
+                                        colorlabels: dat.colorlabels,
+                                        shapename: dat.shapename,
+                                        shapebreaks: dat.shapebreaks,
+                                        shapelabels: dat.shapelabels,
+                                        sizename: dat.sizename,
+                                        sizebreaks: dat.sizebreaks,
+                                        sizelabels: dat.sizelabels
+                                      });
     this.queuePos = 0;
     setTimeout(this.updateCallback.bind(this));
     parent.setAttribute('plot', plotDat);
@@ -392,6 +427,7 @@ AFRAME.registerComponent('plot-axis-text', {
 AFRAME.registerComponent('plot-guide', {
   schema: {
     aesthetic: { default: '' },
+    name: { default: '' },
     breaks: { default: [] },
     labels: { default: [] },
     size: { default: 1 },
@@ -403,7 +439,7 @@ AFRAME.registerComponent('plot-guide', {
       'radius-bottom': 0.01, 'radius-top': 0.001, 'radius-tubular': 0.002,
       shape: 'sphere', color: 'black'
     };
-    this.el.setAttribute('layout', 'type: line; margin: 0.12');
+    this.el.setAttribute('layout', 'type: line; margin: 0.2');
     this.el.setAttribute('static-body', 'shape: box;');
     // add a hidden mesh to stretch the physics body over the text
     this.el.setAttribute('geometry', 'primitive: plane; ' +
@@ -451,7 +487,7 @@ AFRAME.registerComponent('plot-guide', {
       this.labels.appendChild(labEl);
       labEl.setAttribute('scale', new Array(4).join(this.data.fontScale + ' '));
       labEl.setAttribute('bmfont-text', {
-        text: l + '', width: 115, mode: 'nowrap', align: 'right'});
+        text: l + '', width: 200, mode: 'nowrap', align: 'right'});
       this.labels.appendChild(labEl);
     });
   },
