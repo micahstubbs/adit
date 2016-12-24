@@ -4,6 +4,8 @@ Adit is a tool for exploratory data analysis that brings together
 the R language for statistical computing and virtual reality via 
 [shiny](https://shiny.rstudio.com/) and [A-frame](http://aframe.io).
 
+![Sneak peak screenshot](readme/plot.jpg)
+
 ## Current Status
 
 Adit can build data visualizations interactively in VR.
