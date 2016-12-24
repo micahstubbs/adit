@@ -45,7 +45,7 @@ AFRAME.registerComponent('plot', {
       var guideEl = document.createElement('a-entity');
       this.guideArea.appendChild(guideEl);
       guideEl.setAttribute('plot-guide', { 
-        aesthetic: guide, size: size / 3
+        aesthetic: guide, size: (size - 0.06) / 3
       });
       this.guides.push(guideEl);
     });
