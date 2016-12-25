@@ -36,6 +36,7 @@ AFRAME.registerComponent('plot', {
       var axEl = document.createElement('a-entity');
       self.el.appendChild(axEl);
       axEl.setAttribute('plot-axis', { axis: axis, size: size });
+      axEl.plotEl = self.el;
       self.axes.push(axEl);
     });
     this.guideArea = document.createElement('a-entity');
@@ -52,6 +53,7 @@ AFRAME.registerComponent('plot', {
       guideEl.setAttribute('plot-guide', { 
         aesthetic: guide, size: (size - 0.06) / 3
       });
+      guideEl.plotEl = this.el;
       this.guides.push(guideEl);
     });
     
@@ -62,52 +64,34 @@ AFRAME.registerComponent('plot', {
     this.plotArea.setAttribute('plot-area', { points: this.data.points });
     this.axes.forEach( (ax) => {
       if(!ax.components['plot-axis'].data) {
-        this.updatePending = true; 
-        return; 
+        ax.addEventListener('loaded', this.updateScale); 
+      } else {
+        this.updateScale.bind(ax)();
       }
-      var newBreaks, newLabels, newName;
-      switch(ax.components['plot-axis'].data.axis) {
-        case 'x':
-          newName = dat.xname;
-          newBreaks = dat.xbreaks;
-          newLabels = dat.xlabels;
-          break;
-        case 'y':
-          newName = dat.yname;
-          newBreaks = dat.ybreaks;
-          newLabels = dat.ylabels;
-          break;
-        case 'z':
-          newName = dat.zname;
-          newBreaks = dat.zbreaks;
-          newLabels = dat.zlabels;
-          break;
-      }
-      ax.setAttribute('plot-axis', 'name', newName);
-      ax.setAttribute('plot-axis', 'breaks', newBreaks);
-      ax.setAttribute('plot-axis', 'labels', newLabels);
-
     });
     this.guides.forEach( (guide) => {
       if(!guide.components['plot-guide'].data) {
-        this.updatePending = true; 
+        guide.addEventListener('loaded', this.updateScale); 
         return; 
       }
-      aes = guide.components['plot-guide'].data.aesthetic;
-      guide.setAttribute('plot-guide', 
-        AFRAME.utils.extend(guide.getComputedAttribute('plot-guide'),
-        { name: this.data[aes + 'name'],
-          breaks: this.data[aes + 'breaks'],
-          labels: this.data[aes + 'labels']
-        }));
+      this.updateScale.bind(guide)();
     });
     
   },
-  tick: function() {
-    if(this.updatePending) {
-      this.updatePending = false;
-      this.update();
-    }
+  // called when bound to a child scale/guide element
+  updateScale: function() {
+    var type, attr, 
+        mapping = this.axis,
+        dat = this.plotEl.getComputedAttribute('plot');
+    type = this.components['plot-axis'] ? 'plot-axis' : 'plot-guide';
+    attr = this.getComputedAttribute(type);
+    this.setAttribute(type, 
+      AFRAME.utils.extend({}, attr, {
+        breaks: dat[mapping + 'breaks'],
+        labels: dat[mapping + 'labels'],
+        name: dat[mapping + 'name']
+      })
+    );
   }
 });
 
@@ -125,8 +109,6 @@ AFRAME.registerComponent('plot-axis', {
     hoverState: { default: 'hovered' },
     hoverClass: { default: 'hoverable' } 
   },
-  //dependencies: ['material'],
-  
   init: function () {
     // create axis drop-targets for mapping UI
     var vec3 = AFRAME.utils.coordinates.parse;
@@ -142,7 +124,7 @@ AFRAME.registerComponent('plot-axis', {
         compDat = this.data;
     // counter keeps hover events working when the collide zones overlap
     this.numHovered = 0;
-    
+    this.el.axis = compDat.axis;
     this.axis = document.createElement('a-entity');
     this.el.appendChild(this.axis);
     this.mirror = document.createElement('a-entity');
