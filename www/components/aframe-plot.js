@@ -327,10 +327,12 @@ AFRAME.registerComponent('plot-axis-text', {
   
   update: function(oldData) {
     if(this.data.name !== oldData.name) {
-      this.nameEl.setAttribute('bmfont-text', 'text', this.data.name);
+      let nameText = this.data.name.length ? this.data.name : 
+                                             this.data.axis + ' (unmapped)';
+      this.nameEl.setAttribute('bmfont-text', 'text', nameText);
       this.nameEl.setAttribute('position', 
                                this.data.axis == 'y' ? 'x' : this.data.axis, 
-                               this.offset(this.data.name.length));
+                               this.offset(nameText.length));
     }
     // if the two properties areupdated asyncrhonously
     // and are different lengths, wait for the second
