@@ -389,7 +389,7 @@ AFRAME.registerComponent('plot-guide', {
     breaks: { default: [] },
     labels: { default: [] },
     size: { default: 1 },
-    fontScale: { default: 0.15 }
+    fontScale: { default: 0.14 }
   },
   init: function() {
     var ymarg = 0.02;
@@ -414,6 +414,11 @@ AFRAME.registerComponent('plot-guide', {
     this.hoverEl.setAttribute('color', 'white');
     this.hoverEl.setAttribute('static-body', '');
     this.hoverEl.setAttribute('visible', 'false');
+    // guide title
+    this.nameEl = document.createElement('a-entity');
+    this.el.appendChild(this.nameEl);
+    this.nameEl.setAttribute('rotation', '0 0 90');
+    this.nameEl.setAttribute('position', '-0.2 0 0');
     //layout for the labels v. keys
     this.legendEl = document.createElement('a-entity');
     this.el.appendChild(this.legendEl);
@@ -443,6 +448,11 @@ AFRAME.registerComponent('plot-guide', {
     while(this.labels.lastChild) {
       this.labels.removeChild(this.labels.lastChild);
     }
+    this.nameEl.setAttribute('scale', 
+                             new Array(4).join(this.data.fontScale + ' '));
+    this.nameEl.setAttribute('bmfont-text', {
+        text: this.data.name, mode: 'nowrap'
+    });
     this.marks.setAttribute('layout', 'margin', 
                          this.data.size / this.data.breaks.length);
     this.labels.setAttribute('layout', 'margin', 
