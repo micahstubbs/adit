@@ -419,7 +419,7 @@ AFRAME.registerComponent('plot-guide', {
     this.el.appendChild(this.nameEl);
     //this.nameEl.setAttribute('rotation', '0 0 90');
     this.nameEl.setAttribute('position', {
-      x: -0.2, y: this.data.size + 0.0125, z: -0.015 });
+      x: -0.2, y: this.data.size + 0.00625, z: -0.015 });
     //layout for the labels v. keys
     this.legendEl = document.createElement('a-entity');
     this.el.appendChild(this.legendEl);
@@ -441,6 +441,11 @@ AFRAME.registerComponent('plot-guide', {
   },
   update: function(oldDat) {
     var aes = this.data.aesthetic == 'size' ? 'radius' : this.data.aesthetic;
+    this.nameEl.setAttribute('bmfont-text', {
+        text: this.data.name.length ? this.data.name : 
+                                      this.data.aesthetic + ' (unmapped)',
+        width: 275
+    });
     // wait for both if asynch update
     if(this.data.breaks.length !== this.data.labels.length) return;
     while(this.marks.lastChild) {
@@ -453,9 +458,6 @@ AFRAME.registerComponent('plot-guide', {
       'scale', 
       new Array(4).join((this.data.fontScale + 0.01) + ' ')
     );
-    this.nameEl.setAttribute('bmfont-text', {
-        text: this.data.name, mode: 'nowrap'
-    });
     this.marks.setAttribute('layout', 'margin', 
                          this.data.size / this.data.breaks.length);
     this.labels.setAttribute('layout', 'margin', 
