@@ -61,14 +61,16 @@ shinyUI(fluidPage(
                   selected = "iris")
     ),
     column(4,
-      fileInput("datafile", "Or upload your own:", accept = c(
-        "text/csv",
-        "text/comma-separated-values,text/plain",
-        ".csv",
-        ".xls",
-        ".xlsx",
-        ".RDS")),
-      tableOutput("dataset")
+      fileInput(
+        "datafile", 
+        "Or upload your own: (csv, Excel, or RDS)", 
+        accept = c(
+          "text/csv",
+          "text/comma-separated-values,text/plain",
+          ".csv",
+          ".xls",
+          ".xlsx",
+          ".RDS"))
     )
   ),
   #fluidRow(column(
