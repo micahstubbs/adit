@@ -31,7 +31,7 @@ shinyServer(function(input, output) {
   }) 
   
   output$dataset <- renderTable({
-    head(selected_data())
+    input$datafile
   })
   
 
