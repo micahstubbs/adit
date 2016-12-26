@@ -40,22 +40,27 @@ shinyUI(fluidPage(
     tags$style("#vrcontent {height: 600px;}")
   ),
   # Application title
-  titlePanel("VR Data Explorer"),
-    # Sidebar with a slider input for number of bins 
+  titlePanel("Adit: Enter the Data Mine"),
   fluidRow(
-    column(5,
-      tags$p("Adit is a tool for exploratory data analysis",
-             "in virtual reality using the HTC Vive.",
-             "Adit brings",
-             "together the R language for statistical computing and",
-             "virtual reality on the Web",
-             "using RStudio's shiny and Mozilla's A-frame.",
-             "This is an in-development prototype, see the",
-             tags$a(href = "https://github.com/wmurphyrd/adit", 
-                    "Adit GitHib page"), 
-             "for more info.")
+    column(6,
+      tags$p(
+        "Adit is a tool for virtual reality exploratory data analysis",
+        "using the HTC Vive.",
+        "Adit brings",
+        "together the R language for statistical computing and",
+        "virtual reality on the Web",
+        "using RStudio's shiny and Mozilla's A-frame.",
+        "With Adit, you can create visualizations by dragging variable name",
+        "cards and dropping them on the x, y, and z axes or the color, shape,",
+        "and size legends.",
+        "Examine your plot by grabbing it to move and rotate, stretching with",
+        "two hands to scale, or releasing with with a twist to animate.",
+        tags$br(),
+        "Visit the",
+        tags$a(href = "https://github.com/wmurphyrd/adit", "Adit GitHib page"), 
+        "for more info.")
     ),
-    column(2, offset = 1,
+    column(2,
      radioButtons("datasource", "Select a dataset:",
                   c("iris", "mtcars", "diamonds"),
                   selected = "iris")
