@@ -51,7 +51,7 @@ AFRAME.registerComponent('plot', {
       var guideEl = document.createElement('a-entity');
       this.guideArea.appendChild(guideEl);
       guideEl.setAttribute('plot-guide', { 
-        aesthetic: guide, size: (size - 0.1) / 3
+        aesthetic: guide, size: (size - 0.15) / 3
       });
       guideEl.plotEl = this.el;
       this.guides.push(guideEl);
@@ -405,20 +405,21 @@ AFRAME.registerComponent('plot-guide', {
     this.el.appendChild(this.hoverEl);
     this.hoverEl.className += ' hoverable';
     this.hoverEl.setAttribute('position', {
-      x: -0.75 * this.data.size,
-      y: this.data.size / 2 + ymarg / 2,
-      z: -0.001
+      x: -this.data.size,
+      y: this.data.size / 2 + ymarg / 2 + 0.01,
+      z: -0.0151
     });
-    this.hoverEl.setAttribute('width', this.data.size * 1.5);
-    this.hoverEl.setAttribute('height', this.data.size);
+    this.hoverEl.setAttribute('width', this.data.size * 2);
+    this.hoverEl.setAttribute('height', this.data.size + 0.02);
     this.hoverEl.setAttribute('color', 'white');
     this.hoverEl.setAttribute('static-body', '');
     this.hoverEl.setAttribute('visible', 'false');
     // guide title
     this.nameEl = document.createElement('a-entity');
     this.el.appendChild(this.nameEl);
-    this.nameEl.setAttribute('rotation', '0 0 90');
-    this.nameEl.setAttribute('position', '-0.2 0 0');
+    //this.nameEl.setAttribute('rotation', '0 0 90');
+    this.nameEl.setAttribute('position', {
+      x: -0.2, y: this.data.size + 0.0125, z: -0.015 });
     //layout for the labels v. keys
     this.legendEl = document.createElement('a-entity');
     this.el.appendChild(this.legendEl);
@@ -448,8 +449,10 @@ AFRAME.registerComponent('plot-guide', {
     while(this.labels.lastChild) {
       this.labels.removeChild(this.labels.lastChild);
     }
-    this.nameEl.setAttribute('scale', 
-                             new Array(4).join(this.data.fontScale + ' '));
+    this.nameEl.setAttribute(
+      'scale', 
+      new Array(4).join((this.data.fontScale + 0.01) + ' ')
+    );
     this.nameEl.setAttribute('bmfont-text', {
         text: this.data.name, mode: 'nowrap'
     });
