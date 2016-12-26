@@ -18,6 +18,7 @@ shinyServer(function(input, output) {
                 y = "Sepal.Width",
                 z = "Petal.Length",
                 color = "Petal.Width",
+                size = "Petal.Width",
                 shape = "Species")
  
   selected_data <- reactive({
