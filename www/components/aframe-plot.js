@@ -42,7 +42,7 @@ AFRAME.registerComponent('plot', {
     this.guideArea = document.createElement('a-entity');
     this.el.append(this.guideArea);
     this.guideArea.setAttribute('position', {
-      x: size / -2 - 0.15, y: size / -2 + 0.02, z: size / -2 - 0.15
+      x: size / -2, y: size / -2, z: size / -2
     });
     this.guideArea.setAttribute('rotation', '0 -45 0');
     this.guideArea.setAttribute('layout', 
@@ -51,7 +51,7 @@ AFRAME.registerComponent('plot', {
       var guideEl = document.createElement('a-entity');
       this.guideArea.appendChild(guideEl);
       guideEl.setAttribute('plot-guide', { 
-        aesthetic: guide, size: (size - 0.06) / 3
+        aesthetic: guide, size: (size - 0.1) / 3
       });
       guideEl.plotEl = this.el;
       this.guides.push(guideEl);
@@ -392,26 +392,44 @@ AFRAME.registerComponent('plot-guide', {
     fontScale: { default: 0.15 }
   },
   init: function() {
+    var ymarg = 0.02;
     this.defaults = { 
       width: 0.01, height: 0.01, depth: 0.01, radius: 0.01, 
       'radius-bottom': 0.01, 'radius-top': 0.001, 'radius-tubular': 0.002,
       shape: 'sphere', color: 'black'
     };
-    this.el.setAttribute('layout', 'type: line; margin: 0.2');
-    this.el.setAttribute('static-body', 'shape: box;');
-    // add a hidden mesh to stretch the physics body over the text
-    this.el.setAttribute('geometry', 'primitive: plane; ' +
-                                      'width: 0.01; height: 0.01;');
-    this.el.setAttribute('material', 'visible: false;');
-    this.el.className += ' hoverable';
     // aesthetic mapping to pass to shiny
-    this.el.axis = this.data.aesthetic; 
+    this.el.axis = this.data.aesthetic;    
+    // drag-drop interaction target
+    this.hoverEl = document.createElement('a-plane');
+    this.el.appendChild(this.hoverEl);
+    this.hoverEl.className += ' hoverable';
+    this.hoverEl.setAttribute('position', {
+      x: -0.75 * this.data.size,
+      y: this.data.size / 2 + ymarg / 2,
+      z: -0.001
+    });
+    this.hoverEl.setAttribute('width', this.data.size * 1.5);
+    this.hoverEl.setAttribute('height', this.data.size);
+    this.hoverEl.setAttribute('color', 'white');
+    this.hoverEl.setAttribute('static-body', '');
+    this.hoverEl.setAttribute('visible', 'false');
+    //layout for the labels v. keys
+    this.legendEl = document.createElement('a-entity');
+    this.el.appendChild(this.legendEl);
+    this.legendEl.setAttribute('position', {
+      x: -0.2, y: ymarg, z: 0
+    });
+    this.legendEl.setAttribute('layout', 'type: line; margin: 0.18');
+    //layout for text labels
     this.labels = document.createElement('a-entity');
-    this.el.appendChild(this.labels);
+    this.legendEl.appendChild(this.labels);
     this.labels.setAttribute('layout', 'type: box');
+    //layout for the legend keys
     this.marks = document.createElement('a-entity');
-    this.el.appendChild(this.marks);
+    this.legendEl.appendChild(this.marks);
     this.marks.setAttribute('layout', 'type: box;');
+
     this.highlight = this.highlight.bind(this);
     this.unHighlight = this.unHighlight.bind(this);
   },
@@ -425,7 +443,6 @@ AFRAME.registerComponent('plot-guide', {
     while(this.labels.lastChild) {
       this.labels.removeChild(this.labels.lastChild);
     }
-    AFRAME.utils.extend(this.defaults, this.data.overrides);
     this.marks.setAttribute('layout', 'margin', 
                          this.data.size / this.data.breaks.length);
     this.labels.setAttribute('layout', 'margin', 
@@ -459,14 +476,10 @@ AFRAME.registerComponent('plot-guide', {
   },
   highlight: function(evt) {
     if(evt.detail.state !== 'hovered') { return; }
-    for(var lab of this.labels.childNodes) {
-      lab.setAttribute('bmfont-text', 'color', '#827d07');
-    }
+    this.hoverEl.setAttribute('visible', 'true');
   },
   unHighlight: function(evt) {
     if(evt.detail.state !== 'hovered') { return; }
-    for(var lab of this.labels.childNodes) {
-      lab.setAttribute('bmfont-text', 'color', '#000');
-    }
+    this.hoverEl.setAttribute('visible', 'false');
   }
 });
