@@ -162,8 +162,8 @@ shinyUI(fluidPage(
       atags$other("sun-sky", material = "sunPosition: -0.5 1 1"),
       #ground layer w/ collision
       aframeEntity(
-        geometry = "primitive: plane; width: 10000; height: 10000;",
-        material = "src: #grid; repeat: 10000 10000; shader: flat;",
+        geometry = "primitive: plane; width: 100; height: 100;",
+        material = "src: #grid; repeat: 100 100; shader: flat;",
         `static-body` = "",
         `collision-filter` = "collidesWith: notplots, plots, datacolumn",
         rotation = "-90 0 0", position = "0 0 0",
