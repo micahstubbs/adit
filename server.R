@@ -11,6 +11,8 @@ library(shiny)
 library(shinyaframe)
 library(ggplot2)
 library(dplyr)
+library(readr)
+library(readxl)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
@@ -22,19 +24,31 @@ shinyServer(function(input, output) {
                 shape = "Species")
  
   selected_data <- reactive({
-    switch(
-      input$datasource, 
-      "iris" = iris,
-      "mtcars" = mtcars,
-      "diamonds" = as.data.frame(sample_n(diamonds, 300))
-    )
+    if(is.null(input$datafile)) {
+      switch(
+        input$datasource, 
+        "iris" = iris,
+        "mtcars" = mtcars,
+        "diamonds" = as.data.frame(sample_n(diamonds, 300))
+      )
+    } else {
+      ext <- strsplit(input$datafile$name, '.', fixed = TRUE)[[1]] %>%
+        `[`(length(.)) %>%
+        tolower()
+      # add extenstion back to help read_excel determine type
+      path <- paste(input$datafile$datapath, ext, sep = ".")
+      file.rename(input$datafile$datapath, path)
+      switch(
+        ext,
+        csv = read_csv(path),
+        xls = read_excel(path),
+        xlsx = read_excel(path),
+        rds = readRDS(path)
+      ) %>% 
+        as.data.frame()
+    }
   }) 
   
-  output$dataset <- renderTable({
-    head(selected_data())
-  })
-  
-
   output$myplot <- renderAScatter3d({
     # setup plot in ggplot and the aScatter3d widget will translate it into
     # aframe

@@ -8,20 +8,24 @@ the R language for statistical computing and virtual reality via
 
 ## Current Status
 
-Adit can build data visualizations interactively in VR.
-Historgrams, scatter plots, and 3-d scatter plots can be built by dragging
-variable name cards and dropping them on the desired axis. 
-Adit can also map data to shape, color, and size of the points in the plot
-(legends and user interface to set these interactively are coming soon).
+With Adit, you can build and examine exploratory data visualizations interactively in VR.
+Build historgrams, scatter plots, and 3-d scatter plotsby dragging
+variable name cards and dropping them on the desired axes. 
+You can also map data to shape, color, and size of the points in the plot by dropping variable name cards on the 
+corresponding legends.
 
-To examine the resulting plot, 
-you can grab the plot to move and rotate it with a controller. 
+To examine the plot, 
+grab it to move and rotate it with a controller. 
 If you release it with a twist of the wrist, the plot
 will remain animated in a spin. 
 You can also grab the plot with two hands to stretch or shrink it.
 
 ### Latest Updates
 
+* File uploader control to provide your own data
+* Guides for color, shape, and size
+    * View the current mappings to non-position aesthetics
+    * Drag-and-drop `data-frame-column` onto the guide to update the mapping
 * 1-D and 2-D plots: when building a new plot from scratch, the Adit plot
   will show you the intermediate steps. Try changing the dataset selection 
   to "mtcars" or "diamonds" to see this in action. 
@@ -31,10 +35,7 @@ You can also grab the plot with two hands to stretch or shrink it.
     * With two variables mapped, a 2-D scatter plot will display 
       (centered on whichever the 3rd, unmapped axis is)
 * `stretch` component allows for two-handed grab and stretch of entities.
-  Currently incomplete:
     * Efficient direct update of physics bodies to match scale
-    * It's possible to inadvertently pickup another object while 
-      stretching
 * Scales for plots: added `plot-axis-text` component. This will be automatically
   added to a `plot` and label x, y, and z axes. Supports numeric labels and text
   labels for factors. Labels the name of the mapped variable as the scale title.
@@ -84,7 +85,7 @@ You can also grab the plot with two hands to stretch or shrink it.
 
 ## Try it
 
-This is an early work in progress. The current build can be experienced at
+The current build can be experienced at
 http://wmurphyrd.shinyapps.io/adit. 
 
 ## Requirements
