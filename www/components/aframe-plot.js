@@ -57,10 +57,10 @@ AFRAME.registerComponent('plot', {
       this.guides.push(guideEl);
     });
     // correct physics shape to not include scales/guides
-    if (this.el.body) updatePhysicsBodyShape(this.el); else
+    if (this.el.body) this.replacePhysicsBody(); else
       this.el.addEventListener(
         'body-loaded', 
-        (function() { updatePhysicsBodyShape(this.el); }).bind(this)
+        this.replacePhysicsBody.bind(this)
       );
   },
   
@@ -97,6 +97,24 @@ AFRAME.registerComponent('plot', {
         name: dat[mapping + 'name']
       })
     );
+  },
+  // override automatic shape determination so that the bounding area
+  // does not include children (guides/scales)
+  replacePhysicsBody: function(evt) {
+    if(evt && evt.target !== this.el) return;
+    var shape,
+        size = new THREE.Vector3(),
+        geom = this.el.getComputedAttribute('geometry');
+    size.multiplyVectors(
+      this.el.getComputedAttribute('scale'),
+      new THREE.Vector3(geom.width, geom.height, geom.depth).multiplyScalar(0.5)
+    );
+    shape = new CANNON.Box(new CANNON.Vec3().copy(size));
+    this.el.body.shapeOffsets.pop();
+    this.el.body.shapeOrientations.pop();
+    this.el.body.shapes.pop();
+    this.el.body.addShape(shape);  
+    
   }
 });
 
@@ -405,11 +423,13 @@ AFRAME.registerComponent('plot-guide', {
       'radius-bottom': 0.01, 'radius-top': 0.001, 'radius-tubular': 0.002,
       shape: 'sphere', color: 'black'
     };
-    // aesthetic mapping to pass to shiny
-    this.el.axis = this.data.aesthetic;    
+    // aesthetic mapping to receive udpates from `plot`
+    this.el.axis = this.data.aesthetic; 
     // drag-drop interaction target
     this.hoverEl = document.createElement('a-plane');
     this.el.appendChild(this.hoverEl);
+    // aesthetic mapping to pass to shiny
+    this.hoverEl.axis = this.data.aesthetic;  
     this.hoverEl.className += ' hoverable';
     this.hoverEl.setAttribute('position', {
       x: -this.data.size,
@@ -505,21 +525,3 @@ AFRAME.registerComponent('plot-guide', {
     this.hoverEl.setAttribute('visible', 'false');
   }
 });
-
-function updatePhysicsBodyShape(el) {
-  var physicsShape = el.body.shapes[0],
-      newSize = new THREE.Vector3(),
-      geom = el.getComputedAttribute('geometry');
-  if(physicsShape.type === CANNON.Shape.types.BOX &&
-      geom.primitive === "box") {
-    newSize.multiplyVectors(
-      el.getComputedAttribute('scale'),
-      new THREE.Vector3(geom.width, geom.height, geom.depth)
-    );
-    physicsShape.halfExtents.copy(newSize);
-    physicsShape.updateConvexPolyhedronRepresentation();
-  } else {
-    throw "Body shape not yet supported by updatePhysicsBody";
-  }
-  el.body.updateBoundingRadius();
-}
