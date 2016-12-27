@@ -481,6 +481,9 @@ AFRAME.registerComponent('plot-guide', {
     while(this.labels.lastChild) {
       this.labels.removeChild(this.labels.lastChild);
     }
+    // A-Frame v0.4.0 - updated layout compnent no longer needs manual reset
+    this.marks.components.layout.children = [];
+    this.labels.components.layout.children = [];
     this.nameEl.setAttribute(
       'scale', 
       new Array(4).join((this.data.fontScale + 0.01) + ' ')
