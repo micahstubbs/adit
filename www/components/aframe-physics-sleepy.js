@@ -42,7 +42,7 @@ AFRAME.registerComponent('sleepy', {
   },
   
   pause: function () {
-    this.el.removeEventListener('stateadded', this.pauseState.bind(this));
+    this.el.removeEventListener('stateadded', this.holdState.bind(this));
     this.el.addEventListener('stateremoved', this.resumeState.bind(this));
   },
   // disble the sleeping while grabbed because sleep will break constraints
