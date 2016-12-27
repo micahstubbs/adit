@@ -19,7 +19,7 @@ AFRAME.registerComponent('monitor-camera-tweak', {
     this.el.setAttribute('position', '0 0 0');
   },
   tweakCamera: function() {
-    this.el.setAttibute('position', this.offsetPos);
+    this.el.setAttribute('position', this.offsetPos);
   }
   
 });
