@@ -56,7 +56,12 @@ AFRAME.registerComponent('plot', {
       guideEl.plotEl = this.el;
       this.guides.push(guideEl);
     });
-    
+    // correct physics shape to not include scales/guides
+    if (this.el.body) updatePhysicsBodyShape(this.el); else
+      this.el.addEventListener(
+        'body-loaded', 
+        (function() { updatePhysicsBodyShape(this.el); }).bind(this)
+      );
   },
   
   update: function() {
@@ -500,3 +505,21 @@ AFRAME.registerComponent('plot-guide', {
     this.hoverEl.setAttribute('visible', 'false');
   }
 });
+
+function updatePhysicsBodyShape(el) {
+  var physicsShape = el.body.shapes[0],
+      newSize = new THREE.Vector3(),
+      geom = el.getComputedAttribute('geometry');
+  if(physicsShape.type === CANNON.Shape.types.BOX &&
+      geom.primitive === "box") {
+    newSize.multiplyVectors(
+      el.getComputedAttribute('scale'),
+      new THREE.Vector3(geom.width, geom.height, geom.depth)
+    );
+    physicsShape.halfExtents.copy(newSize);
+    physicsShape.updateConvexPolyhedronRepresentation();
+  } else {
+    throw "Body shape not yet supported by updatePhysicsBody";
+  }
+  el.body.updateBoundingRadius();
+}
