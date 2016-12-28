@@ -25,13 +25,12 @@ shinyServer(function(input, output, session) {
  
   selected_data <- reactive({
     if(is.null(input$datafile)) {
-      switch(
+      df <- switch(
         input$datasource, 
         "iris" = iris,
         "mtcars" = mtcars,
         "diamonds" = as.data.frame(diamonds)
-      ) -> 
-        df
+      ) 
     } else {
       ext <- strsplit(input$datafile$name, '.', fixed = TRUE)[[1]] %>%
         `[`(length(.)) %>%
@@ -39,15 +38,13 @@ shinyServer(function(input, output, session) {
       # add extenstion back to help read_excel determine type
       path <- paste(input$datafile$datapath, ext, sep = ".")
       file.rename(input$datafile$datapath, path)
-      df <- switch(
+      df <- as.data.frame(switch(
         ext,
         csv = read_csv(path),
         xls = read_excel(path),
         xlsx = read_excel(path),
         rds = readRDS(path)
-      ) %>% 
-        as.data.frame() ->
-        df
+      ))
     }
     updateSliderInput(session, "sample_limit", max = nrow(df))
     if(nrow(df) > input$sample_limit) sample_n(df, input$sample_limit) else df
@@ -63,7 +60,11 @@ shinyServer(function(input, output, session) {
     # clear out old mappings when the dataset changes
     mappings <<- mappings[mappings %in% names(selected_data())]
     positionals <- na.omit(mappings[c("x", "y", "z")])
-    mappings_aes <- do.call(aes_string, as.list(mappings))
+    mappings %>% 
+      as.list() %>%
+      lapply(as.name) %>%
+      do.call(what = aes) ->
+      mappings_aes
     plt <- switch(
       length(positionals), 
       { #1
