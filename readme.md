@@ -8,8 +8,10 @@ the R language for statistical computing and virtual reality via
 
 ## Current Status
 
-With Adit, you can build and examine exploratory data visualizations interactively in VR.
-Build historgrams, scatter plots, and 3-d scatter plotsby dragging
+With Adit, you can build and examine exploratory data visualizations 
+interactively in VR.
+Upload a dataset or choose an example one. 
+Build histograms, scatter plots, and 3-d scatter plots by dragging
 variable name cards and dropping them on the desired axes. 
 You can also map data to shape, color, and size of the points in the plot by dropping variable name cards on the 
 corresponding legends.
