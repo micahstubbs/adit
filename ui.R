@@ -88,7 +88,7 @@ shinyUI(fluidPage(
           6,
           sliderInput("sample_limit", 
                       "Number of cases to plot:",
-                      value = 150, min = 0, max = 150, round = TRUE)
+                      value = 100, min = 0, max = 150, round = TRUE)
         ),
         column(
           6,
