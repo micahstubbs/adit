@@ -37,12 +37,18 @@ shinyUI(fluidPage(
     tags$script(src = "components/aframe-drag-drop.js"),
     tags$script(src = "components/aframe-physics-collider.js"),
     tags$script(src = "components/aframe-monitor-camera-tweak.js"),
-    tags$style("#vrcontent {height: 600px;}")
+    tags$style("#vrcontent {height: 600px;}"),
+    # activate the warnings block after the window is loaded, so that they don't
+    # appear erroneously for a second while shiny is initalizing
+    tags$script(
+      type = "text/javascript", 
+      "$(window).load(function() {setTimeout(function() {$('#warningsContainer').attr('style', 'display: block;');}, 500);})"
+    )
   ),
   # Application title
   titlePanel("Adit: Enter the Data Mine"),
   fluidRow(
-    column(6,
+    column(5,
       tags$p(
         "Adit is a tool for virtual reality exploratory data analysis",
         "using the HTC Vive.",
@@ -61,11 +67,13 @@ shinyUI(fluidPage(
         "for more info.")
     ),
     column(
-      6,
+      6, offset = 1,
       fluidRow(
         column(4,
                radioButtons("datasource", "Select a dataset:",
-                            c("iris", "mtcars", "diamonds"),
+                            list("Anderson's Iris Data" = "iris", 
+                                 "1974 Car Fuel Efficiency" = "mtcars", 
+                                 "ggplot2 Diamond Prices" = "diamonds"),
                             selected = "iris")
         ),
         column(
@@ -98,11 +106,16 @@ shinyUI(fluidPage(
       )
     )
   ),
-  conditionalPanel("!window.hasNativeWebVRImplementation", 
-                   HTML(readLines("html/oldbrowserwarn.HTML"))),
-  conditionalPanel(
-    "window.hasNativeWebVRImplementation && navigator.userAgent.includes('Chrome/56')",
-    HTML(readLines("html/badchromium.HTML"))),
+  tags$div(id = "warningsContainer", style = "display: none;",
+    conditionalPanel(
+      "!window.hasNativeWebVRImplementation", 
+      HTML(readLines("html/oldbrowserwarn.HTML"))
+    ),
+    conditionalPanel(
+      "window.hasNativeWebVRImplementation && navigator.userAgent.includes('Chrome/56')",
+      HTML(readLines("html/badchromium.HTML"))
+    )
+  ),
   aframeScene(
     id = "vrcontent",
     embedded = "",
