@@ -29,7 +29,7 @@ shinyServer(function(input, output, session) {
         input$datasource, 
         "iris" = iris,
         "mtcars" = mtcars,
-        "diamonds" = as.data.frame(diamonds)
+        "diamonds" = diamonds
       ) 
     } else {
       ext <- strsplit(input$datafile$name, '.', fixed = TRUE)[[1]] %>%
@@ -38,14 +38,15 @@ shinyServer(function(input, output, session) {
       # add extenstion back to help read_excel determine type
       path <- paste(input$datafile$datapath, ext, sep = ".")
       file.rename(input$datafile$datapath, path)
-      df <- as.data.frame(switch(
+      df <- switch(
         ext,
         csv = read_csv(path),
         xls = read_excel(path),
         xlsx = read_excel(path),
         rds = readRDS(path)
-      ))
+      )
     }
+    df <- filter(df, complete.cases(df))
     updateSliderInput(session, "sample_limit", max = nrow(df))
     if(nrow(df) > input$sample_limit) sample_n(df, input$sample_limit) else df
   }) 
