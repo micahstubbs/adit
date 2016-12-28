@@ -15,7 +15,7 @@ library(readr)
 library(readxl)
 
 # Define server logic required to draw a histogram
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
   mappings <- c(x = "Sepal.Length",
                 y = "Sepal.Width",
                 z = "Petal.Length",
@@ -29,8 +29,9 @@ shinyServer(function(input, output) {
         input$datasource, 
         "iris" = iris,
         "mtcars" = mtcars,
-        "diamonds" = as.data.frame(sample_n(diamonds, 300))
-      )
+        "diamonds" = as.data.frame(diamonds)
+      ) -> 
+        df
     } else {
       ext <- strsplit(input$datafile$name, '.', fixed = TRUE)[[1]] %>%
         `[`(length(.)) %>%
@@ -38,15 +39,18 @@ shinyServer(function(input, output) {
       # add extenstion back to help read_excel determine type
       path <- paste(input$datafile$datapath, ext, sep = ".")
       file.rename(input$datafile$datapath, path)
-      switch(
+      df <- switch(
         ext,
         csv = read_csv(path),
         xls = read_excel(path),
         xlsx = read_excel(path),
         rds = readRDS(path)
       ) %>% 
-        as.data.frame()
+        as.data.frame() ->
+        df
     }
+    updateSliderInput(session, "sample_limit", max = nrow(df))
+    if(nrow(df) > input$sample_limit) sample_n(df, input$sample_limit) else df
   }) 
   
   output$myplot <- renderAScatter3d({

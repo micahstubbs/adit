@@ -60,23 +60,70 @@ shinyUI(fluidPage(
         tags$a(href = "https://github.com/wmurphyrd/adit", "Adit GitHib page"), 
         "for more info.")
     ),
-    column(2,
-     radioButtons("datasource", "Select a dataset:",
-                  c("iris", "mtcars", "diamonds"),
-                  selected = "iris")
-    ),
-    column(4,
-      fileInput(
-        "datafile", 
-        "Or upload your own: (csv, Excel, or RDS)", 
-        accept = c(
-          "text/csv",
-          "text/comma-separated-values,text/plain",
-          ".csv",
-          ".xls",
-          ".xlsx",
-          ".RDS"))
+    column(
+      6,
+      fluidRow(
+        column(4,
+               radioButtons("datasource", "Select a dataset:",
+                            c("iris", "mtcars", "diamonds"),
+                            selected = "iris")
+        ),
+        column(
+          8,
+          fileInput(
+            "datafile", 
+            "Or upload your own: (csv, Excel, or RDS)", 
+            accept = c(
+              "text/csv",
+              "text/comma-separated-values,text/plain",
+              ".csv",
+              ".xls",
+              ".xlsx",
+              ".RDS")
+          )
+        )
+      ),
+      fluidRow(
+        column(
+          6,
+          sliderInput("sample_limit", 
+                      "Number of cases to plot:",
+                      value = 150, min = 0, max = 150, round = TRUE)
+        ),
+        column(
+          6,
+          helpText("Limiting the number of cases will use a randomly sampled",
+                   "subset and will improve performance with large datasets.")
+        )
+      )
     )
+  ),
+  conditionalPanel("!window.hasNativeWebVRImplementation", HTML("
+<div class=\"alert alert-danger\">
+WebVR is a cutting-edge, experimental technology, and you'll need to install 
+a cutting-edge, experimental web browser for it to work properly. 
+Here's what you'll need to do:
+<ul>
+ <li>Visit <a href = \"https://webvr.info/get-chrome/\">https://webvr.info/get-chrome/</a></li>
+ <li>Click on the \"Archive\" and then \"September, 23 2016\" folders to download the correct WebVR version of Chromium (or 
+  <a href = \"https://drive.google.com/open?id=0BzudLt22BqGRbHdGOTdiaTBkZXM\">click here</a> to go directly there)</li>
+ <li>Open Chromium and enable WebVR entering the option links </li>
+ <li>chrome://flags/#enable-webvr</li>
+ <li>chrome://flags/#enable-gamepad-extensions</li>
+</div>")
+  ),
+  conditionalPanel(
+    "window.hasNativeWebVRImplementation && navigator.userAgent.includes('Chrome/56')",
+    HTML("
+<div class=\"alert alert-danger\">
+You are running a version of WebVR Chromium that contains a bug that prevents Adit
+from running properly. Please download a previous version to experience Adit. 
+<ul>
+ <li>Visit <a href = \"https://webvr.info/get-chrome/\">https://webvr.info/get-chrome/</a></li>
+ <li>Click on the \"Archive\" and then \"September, 23 2016\" folders to download the previous WebVR version of Chromium (or 
+  <a href = \"https://drive.google.com/open?id=0BzudLt22BqGRbHdGOTdiaTBkZXM\">click here</a> to go directly there)</li>
+</ul>
+</div>")
   ),
   aframeScene(
     id = "vrcontent",
