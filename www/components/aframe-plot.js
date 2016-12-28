@@ -414,13 +414,13 @@ AFRAME.registerComponent('plot-guide', {
     breaks: { default: [] },
     labels: { default: [] },
     size: { default: 1 },
-    fontScale: { default: 0.14 }
+    fontScale: { default: 0.12 }
   },
   init: function() {
     var ymarg = 0.02;
     this.defaults = { 
-      width: 0.01, height: 0.01, depth: 0.01, radius: 0.01, 
-      'radius-bottom': 0.01, 'radius-top': 0.001, 'radius-tubular': 0.002,
+      width: 0.01, height: 0.01, depth: 0.01, radius: 0.005, 
+      'radius-bottom': 0.005, 'radius-top': 0.001, 'radius-tubular': 0.001,
       shape: 'sphere', color: 'black'
     };
     // aesthetic mapping to receive udpates from `plot`
@@ -495,7 +495,8 @@ AFRAME.registerComponent('plot-guide', {
     this.data.breaks.forEach( (b) => {
       var mark = AFRAME.utils.extend({}, this.defaults);
       mark[aes] = b;
-      var markEl = document.createElement('a-' + mark.shape);
+      var markEl = document.createElement('a-' + 
+      (mark.shape === 'torusKnot' ? 'torus-knot' : mark.shape));
       delete mark.shape;
       Object.keys(mark).forEach( (prop) => {
         markEl.setAttribute(prop, mark[prop]);
