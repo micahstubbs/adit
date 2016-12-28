@@ -98,33 +98,11 @@ shinyUI(fluidPage(
       )
     )
   ),
-  conditionalPanel("!window.hasNativeWebVRImplementation", HTML("
-<div class=\"alert alert-danger\">
-WebVR is a cutting-edge, experimental technology, and you'll need to install 
-a cutting-edge, experimental web browser for it to work properly. 
-Here's what you'll need to do:
-<ul>
- <li>Visit <a href = \"https://webvr.info/get-chrome/\">https://webvr.info/get-chrome/</a></li>
- <li>Click on the \"Archive\" and then \"September, 23 2016\" folders to download the correct WebVR version of Chromium (or 
-  <a href = \"https://drive.google.com/open?id=0BzudLt22BqGRbHdGOTdiaTBkZXM\">click here</a> to go directly there)</li>
- <li>Open Chromium and enable WebVR entering the option links </li>
- <li>chrome://flags/#enable-webvr</li>
- <li>chrome://flags/#enable-gamepad-extensions</li>
-</div>")
-  ),
+  conditionalPanel("!window.hasNativeWebVRImplementation", 
+                   HTML(readLines("html/oldbrowserwarn.HTML"))),
   conditionalPanel(
     "window.hasNativeWebVRImplementation && navigator.userAgent.includes('Chrome/56')",
-    HTML("
-<div class=\"alert alert-danger\">
-You are running a version of WebVR Chromium that contains a bug that prevents Adit
-from running properly. Please download a previous version to experience Adit. 
-<ul>
- <li>Visit <a href = \"https://webvr.info/get-chrome/\">https://webvr.info/get-chrome/</a></li>
- <li>Click on the \"Archive\" and then \"September, 23 2016\" folders to download the previous WebVR version of Chromium (or 
-  <a href = \"https://drive.google.com/open?id=0BzudLt22BqGRbHdGOTdiaTBkZXM\">click here</a> to go directly there)</li>
-</ul>
-</div>")
-  ),
+    HTML(readLines("html/badchromium.HTML"))),
   aframeScene(
     id = "vrcontent",
     embedded = "",
