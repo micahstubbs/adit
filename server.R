@@ -14,6 +14,16 @@ library(dplyr)
 library(readr)
 library(readxl)
 
+mymtcars <- mtcars %>%
+  mutate(wt = wt * 1000,
+         vs = factor(vs, labels = c("V Engine", "Inline")),
+         am = factor(am, labels = c("Automatic", "Manual"))) %>%
+  rename("engine config" = vs, transmission = am, gears = gear, 
+         carburetors = carb, "quarter mile (seconds)" = qsec, 
+         cylinders = cyl, displacement = disp, 
+         "drag ratio" = drat, horsepower = hp, "miles per gallon" = mpg,
+         "weight (lbs)" = wt)
+
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
   mappings <- c(x = "Sepal.Length",
@@ -28,7 +38,7 @@ shinyServer(function(input, output, session) {
       df <- switch(
         input$datasource, 
         "iris" = iris,
-        "mtcars" = mtcars,
+        "mtcars" = mymtcars,
         "diamonds" = diamonds
       ) 
     } else {
