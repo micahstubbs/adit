@@ -433,11 +433,11 @@ AFRAME.registerComponent('plot-guide', {
     this.hoverEl.className += ' hoverable';
     this.hoverEl.setAttribute('position', {
       x: -this.data.size,
-      y: this.data.size / 2 + ymarg / 2 + 0.01,
+      y: this.data.size / 2 + ymarg / 2 + 0.0175,
       z: -0.0151
     });
     this.hoverEl.setAttribute('width', this.data.size * 2);
-    this.hoverEl.setAttribute('height', this.data.size + 0.02);
+    this.hoverEl.setAttribute('height', this.data.size + 0.04);
     this.hoverEl.setAttribute('color', 'white');
     this.hoverEl.setAttribute('static-body', '');
     this.hoverEl.setAttribute('visible', 'false');
