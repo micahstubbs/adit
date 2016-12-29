@@ -293,7 +293,7 @@ AFRAME.registerComponent("plot-area", {
         p = this.pointEls[this.queuePos];
       }
       p.setAttribute('geometry', pdat.geometry);
-      p.setAttribute('material', pdat.material);
+      p.setAttribute('material', 'color: ' + pdat.color);
       p.setAttribute('animation', 
                      'property: position; ' + 
                        'startEvents: '+ this.POINT_UPDATED + 
