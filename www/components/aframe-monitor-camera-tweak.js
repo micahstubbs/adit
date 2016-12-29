@@ -8,8 +8,17 @@ AFRAME.registerComponent('monitor-camera-tweak', {
     this.unTweakCameraB = this.unTweakCamera.bind(this);
   },
   play: function() {
-    this.el.sceneEl.addEventListener('enter-vr', this.unTweakCameraB);
-    this.el.sceneEl.addEventListener('exit-vr', this.tweakCameraB);
+    if(navigator.getVRDisplays) {
+      navigator.getVRDisplays().then( (displays) => {
+        if (displays.length > 0) {
+            vrDisplay = displays[displays.length - 1];
+            if(vrDisplay.capabilities.hasPosition) {
+                this.el.sceneEl.addEventListener('enter-vr', this.unTweakCameraB);
+                this.el.sceneEl.addEventListener('exit-vr', this.tweakCameraB);
+            }
+        }
+      });
+    }
   },
   pause: function() {
     this.el.sceneEl.removeEventListener('enter-vr', this.unTweakCameraB);
