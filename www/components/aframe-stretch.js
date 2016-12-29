@@ -21,9 +21,6 @@ AFRAME.registerComponent('stretch', {
         this.findOtherController.bind(this));
     }
     
-    //this.physics = this.el.sceneEl.systems.physics;
-    //this.constraint = null;
-
     // Bind event handlers
     this.onHit = this.onHit.bind(this);
     this.onGripOpen = this.onGripOpen.bind(this);
@@ -69,10 +66,6 @@ AFRAME.registerComponent('stretch', {
   onGripOpen: function (evt) {
     var hitEl = this.hitEl;
     this.grabbing = false;
-    if(this.constraint) {
-      this.el.body.world.removeConstraint(this.constraint);
-      this.constraint = null;
-    }
     if (!hitEl) { return; }
     hitEl.removeState(this.STRETCHED_STATE);
     this.hitEl = undefined;
@@ -90,10 +83,6 @@ AFRAME.registerComponent('stretch', {
        ) {
       hitEl.addState(this.STRETCHED_STATE);
       this.hitEl = hitEl;
-      // adding a second constraint helps for a natural stretch feeling
-      // the body stays anchored at a midpoint between the two controllers
-      this.constraint = new CANNON.LockConstraint(this.el.body, hitEl.body);
-      this.el.body.world.addConstraint(this.constraint);
     }
   },
   
