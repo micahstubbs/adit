@@ -468,13 +468,21 @@ AFRAME.registerComponent('plot-guide', {
   },
   update: function(oldDat) {
     var aes = this.data.aesthetic == 'size' ? 'radius' : this.data.aesthetic;
-    this.nameEl.setAttribute('bmfont-text', {
-        text: this.data.name.length ? this.data.name : 
-                                      this.data.aesthetic + ' (unmapped)',
-        width: 275
-    });
     // wait for both if asynch update
     if(this.data.breaks.length !== this.data.labels.length) return;
+    this.nameEl.setAttribute('bmfont-text', {
+      text: this.data.name.length ? this.data.name : 
+                                    this.data.aesthetic + ' (unmapped)',
+      width: 275
+    });
+    this.nameEl.setAttribute(
+      'scale', 
+      new Array(4).join((this.data.fontScale + 0.01) + ' ')
+    );
+    // only update legends if there is a change (AFRME.utils.deepEqual won't
+    //  suffice as it doesn't compare array contents)
+    if(arraysIdentical(this.data.breaks, oldDat.breaks) && 
+         arraysIdentical(this.data.labels, oldDat.labels)) return;
     while(this.marks.lastChild) {
       this.marks.removeChild(this.marks.lastChild);
     }
@@ -484,10 +492,6 @@ AFRAME.registerComponent('plot-guide', {
     // A-Frame v0.4.0 - updated layout compnent no longer needs manual reset
     this.marks.components.layout.children = [];
     this.labels.components.layout.children = [];
-    this.nameEl.setAttribute(
-      'scale', 
-      new Array(4).join((this.data.fontScale + 0.01) + ' ')
-    );
     this.marks.setAttribute('layout', 'margin', 
                          this.data.size / this.data.breaks.length);
     this.labels.setAttribute('layout', 'margin', 
@@ -529,3 +533,7 @@ AFRAME.registerComponent('plot-guide', {
     this.hoverEl.setAttribute('visible', 'false');
   }
 });
+
+function arraysIdentical(a1, a2) {
+  return a1.length === a2.length && a1.every((v,i)=> v === a2[i]);
+}
