@@ -17,11 +17,11 @@ shinyUI(fluidPage(
   
   # AFRAME scripts
   tags$head(
+    # babel for EX5 compatibility
+    tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.18.1/babel.min.js"),
     #tags$script(src = "aframe.js"),
-    tags$script(src = "cannon.js"),
     tags$script(src = "components/ground.js"),
     tags$script(src = "shaders/skyGradient.js"),
-    #tags$script(src = "components/aframe-layout-component.js"),
     tags$script(src = "components/kframe.js"),
     tags$script(src = "components/aframe-bmfont-text-component.js"),
     tags$script(src = "components/aframe-draw-component.js"),
@@ -148,6 +148,7 @@ shinyUI(fluidPage(
       atags$mixin(id = "testbox-collided", material = "color: green")
     ),
     atags$entity(camera = "userHeight: 1.6", `look-controls` = "",
+                 `wasd-controls` = "",
                  `monitor-camera-tweak` = "", position = "0 0 .8"),
     # Hand conttols
     aframeEntity(
@@ -170,26 +171,6 @@ shinyUI(fluidPage(
       sleepy = "angularDamping: 0; speedLimit: 1",
       `collision-filter` = "group: plots;"
     ),
-    # aframeBox(
-    #   position = "-1 1.5 -0.5",
-    #   width = "0.25", height = "0.25", depth = "0.25",
-    #   `dynamic-body` = "",
-    #   `collision-filter` = "group: notplots; collidesWith: notplots, default;",
-    #   sleepy = "",
-    #   class = "grabbable",
-    #   id = "testbox",
-    #   mixin = "testbox"
-    # ),
-    # aframeBox(
-    #   position = "-1 1.5 0.5",
-    #   width = "0.25", height = "0.25", depth = "0.25",
-    #   material = "color: blue",
-    #   `dynamic-body` = "",
-    #   `collision-filter` = "group: notplots; collidesWith: notplots, default;",
-    #   sleepy = "",
-    #   class = "grabbable",
-    #   id = "filterbox2"
-    # ),
     aframeEntity(
       position = "1 1 -0.25",
       aDataFrameOutput("mydat"),
