@@ -11,11 +11,8 @@ library(shiny)
 library(htmlwidgets)
 library(shinyaframe)
 
-
-# Define UI for application that draws a histogram
 shinyUI(fluidPage(
   
-  # AFRAME scripts
   tags$head(
     # babel for EX5 compatibility
     tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.18.1/babel.min.js"),

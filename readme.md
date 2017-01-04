@@ -4,7 +4,24 @@ Adit is a tool for exploratory data analysis that brings together
 the R language for statistical computing and virtual reality via 
 [shiny](https://shiny.rstudio.com/) and [A-frame](http://aframe.io).
 
-![Sneak peak screenshot](readme/plot.jpg)
+[![Preview image](readme/adit.gif)](https://youtu.be/vy8e8zIi4qw)
+
+[Click for full video preview](https://youtu.be/vy8e8zIi4qw)
+
+## Motivation
+
+In the modern, data-rich world, analysts and data scientists seek to gain 
+insights from data sets of ever-increasing complexity. A key step in the
+process is exploratory data analysis, getting to know the data and discovering
+variable relationships, yet current, 2-D technology limits the ability to
+visualize the relationships and interactions of many variables. 
+
+Adit opens the door to true 3-D data exploration with the HTC Vive. 
+Stereo vision with positional tracking provide a link to human spatial
+understanding that cannot be imitated on the desktop monitor, 
+and hand controls provide an intuitive
+experience. Together, these allow for rapid data exploration and insight 
+discovery. 
 
 ## Current Status
 
@@ -22,7 +39,37 @@ If you release it with a twist of the wrist, the plot
 will remain animated in a spin. 
 You can also grab the plot with two hands to stretch or shrink it.
 
-### Latest Updates
+### The Future
+
+Since WebVR is already online, shared experiences are a natural addition so that 
+colleagues from across the globe could join 
+each other to explore data together. WebVR is also multi-platform, so 
+colleagues or clients could join with mobile VR or even desktop monitors for you
+to show them what you've discovered. 
+
+## Try Adit Now
+
+**You can experience Adit by visiting http://wmurphyrd.shinyapps.io/adit.** 
+
+### Requirements
+Adit requires a complete VR system (rotational & positional tracking with
+hand controllers). With the recent release of A-Frame v0.4.0, 
+Oculus Rift + Touch has joined the HTC Vive
+in offering this experience. I will be updating A-Frame to v0.4.0 in 
+the near future.
+
+WebVR is still experimental and only available in test versions of browsers. 
+Currently, only [Chromium](https://webvr.info/get-chrome/) 
+supports the full experience with hand controllers. Also, I'm recommending
+[the September 23rd archived Chromium build](https://drive.google.com/drive/folders/0BzudLt22BqGRbHdGOTdiaTBkZXM) 
+for Adit because the latest version doesn't always get along with physics. 
+
+After installing Chromium, you **must** enable two options for WebVR to work:
+
+* chrome://flags/#enable-webvr
+* chrome://flags/#enable-gamepad-extensions
+
+### Features and Updates
 
 * File uploader control to provide your own data
 * Guides for color, shape, and size
@@ -85,26 +132,4 @@ You can also grab the plot with two hands to stretch or shrink it.
   constraints
 
 
-## Try it
-
-The current build can be experienced at
-http://wmurphyrd.shinyapps.io/adit. 
-
-## Requirements
-Adit requires a complete VR system (rotational & positional tracking with
-hand controllers). With the recent release of A-Frame v0.4.0, 
-Oculus Rift + Touch has joined the HTC Vive
-in offering this experience. I will be updating A-Frame to v0.4.0 in 
-this project soon.
-
-WebVR is still experimental and only available in test versions of browsers. 
-Currently, only [Chromium](https://webvr.info/get-chrome/) 
-supports the full experience with hand controllers. Also, I'm recommending
-[the September 23rd archived Chromium build](https://drive.google.com/drive/folders/0BzudLt22BqGRbHdGOTdiaTBkZXM) 
-for Adit because the latest version doesn't always get along with physics. 
-
-After installing Chromium, you **must** enable two options for WebVR to work:
-
-* chrome://flags/#enable-webvr
-* chrome://flags/#enable-gamepad-extensions
   
